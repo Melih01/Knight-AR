@@ -7,3 +7,5 @@ Mobile AR Game
 
 - Added Unity Project
 - Added Character Movement
+- Added AR Mode for Paladin Prefab.
+- Added Game Manager AR Script.
