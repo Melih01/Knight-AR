@@ -4,14 +4,37 @@ using UnityEngine;
 
 public class PaladinController : ThidPersonExampleController, IDamageable
 {
-    [HideInInspector]
-    public Animator anim;
+    [Space]
+    public bool AR = false;
+
+    [Space]
     public float attackDamage;
     public float health;
+
+    [HideInInspector]
+    public Animator anim;
 
     void Awake()
     {
         anim = GetComponent<Animator>();
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        PaladinController paladin = GetComponent<PaladinController>();
+
+        if (AR)
+        {
+            gameObject.transform.localScale = new Vector3(.1f, .1f, .1f);
+            paladin.MovementSpeed *= gameObject.transform.localScale.x;
+        }
+        else
+        {
+            gameObject.transform.localScale = new Vector3(1, 1, 1);
+            paladin.MovementSpeed = 10;
+        }
     }
 
     public override void Update()

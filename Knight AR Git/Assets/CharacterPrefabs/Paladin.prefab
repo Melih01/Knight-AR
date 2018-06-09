@@ -2144,9 +2144,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MovementSpeed: 10
   inputMoveVector: 0
-  anim: {fileID: 0}
+  AR: 0
   attackDamage: 10
   health: 100
+  anim: {fileID: 0}
 --- !u!137 &137179576443162496
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
@@ -2407,7 +2408,7 @@ CharacterController:
   m_Height: 1.65
   m_Radius: 0.3
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.9, z: 0}
