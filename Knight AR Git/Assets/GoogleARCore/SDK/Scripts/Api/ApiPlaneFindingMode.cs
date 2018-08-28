@@ -20,11 +20,13 @@
 
 namespace GoogleARCoreInternal
 {
-    internal enum ApiPlaneFindingMode
+    using System.Diagnostics.CodeAnalysis;
+
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public enum ApiPlaneFindingMode
     {
         Disabled = 0,
         Horizontal = 1,
-        Vertical = 2,
-        HorizontalAndVertical = 3,
     }
 }

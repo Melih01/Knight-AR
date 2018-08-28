@@ -34,14 +34,10 @@ namespace GoogleARCore
         /// <param name="state">State of the estimate.</param>
         /// <param name="pixelIntensity">Average pixel intensity. Values range from 0.0
         /// to 1.0, where 0.0 represents black and 1.0 represents white.</param>
-        /// <param name="colorCorrection">Color correction RGB scaling factors to be
-        /// applied to the final color computed by the fragment shader to match the
-        /// ambient color.</param>
-        public LightEstimate(LightEstimateState state, float pixelIntensity, Color colorCorrection)
+        public LightEstimate(LightEstimateState state, float pixelIntensity)
         {
             State = state;
             PixelIntensity = pixelIntensity;
-            ColorCorrection = colorCorrection;
         }
 
         /// <summary>
@@ -54,11 +50,5 @@ namespace GoogleARCore
         /// represents black and 1.0 represents white.
         /// </summary>
         public float PixelIntensity { get; private set; }
-
-        /// <summary>
-        /// Gets the color correction RGB scaling factors to be applied to the final color computed by
-        /// the fragment shader to match the ambient color.
-        /// </summary>
-        public Color ColorCorrection { get; private set; }
     }
 }

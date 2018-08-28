@@ -21,18 +21,15 @@
 namespace GoogleARCoreInternal
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-#if UNITY_IOS
-    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
-    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
-#else
-    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
-    using IOSImport = GoogleARCoreInternal.DllImportNoop;
-#endif
-
-    internal class SessionConfigApi
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+     Justification = "Internal")]
+    public class SessionConfigApi
     {
         private NativeSession m_NativeSession;
 
@@ -64,19 +61,9 @@ namespace GoogleARCoreInternal
             ExternApi.ArConfig_setLightEstimationMode(m_NativeSession.SessionHandle, configHandle, lightingMode);
 
             var planeFindingMode = ApiPlaneFindingMode.Disabled;
-            switch (arCoreSessionConfig.PlaneFindingMode)
+            if (arCoreSessionConfig.EnablePlaneFinding)
             {
-            case DetectedPlaneFindingMode.Horizontal:
                 planeFindingMode = ApiPlaneFindingMode.Horizontal;
-                break;
-            case DetectedPlaneFindingMode.Vertical:
-                planeFindingMode = ApiPlaneFindingMode.Vertical;
-                break;
-            case DetectedPlaneFindingMode.HorizontalAndVertical:
-                planeFindingMode = ApiPlaneFindingMode.HorizontalAndVertical;
-                break;
-            default:
-                break;
             }
 
             ExternApi.ArConfig_setPlaneFindingMode(m_NativeSession.SessionHandle, configHandle, planeFindingMode);
@@ -95,25 +82,23 @@ namespace GoogleARCoreInternal
 
         private struct ExternApi
         {
-#pragma warning disable 626
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArConfig_create(IntPtr session, ref IntPtr out_config);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArConfig_destroy(IntPtr config);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArConfig_setLightEstimationMode(IntPtr session, IntPtr config,
                 ApiLightEstimationMode light_estimation_mode);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArConfig_setPlaneFindingMode(IntPtr session, IntPtr config,
                 ApiPlaneFindingMode plane_finding_mode);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArConfig_setUpdateMode(IntPtr session, IntPtr config,
                 ApiUpdateMode update_mode);
-#pragma warning restore 626
         }
     }
 }

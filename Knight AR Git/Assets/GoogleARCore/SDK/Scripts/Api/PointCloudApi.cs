@@ -22,20 +22,14 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-#if UNITY_IOS
-    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
-    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
-#else
-    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
-    using IOSImport = GoogleARCoreInternal.DllImportNoop;
-#endif
-
-    using Marshal = System.Runtime.InteropServices.Marshal;
-
-    internal class PointCloudApi
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public class PointCloudApi
     {
         private NativeSession m_NativeSession;
 
@@ -100,22 +94,20 @@ namespace GoogleARCoreInternal
 
         private struct ExternApi
         {
-#pragma warning disable 626
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPointCloud_getTimestamp(IntPtr session, IntPtr pointCloudHandle,
                 ref long timestamp);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPointCloud_getNumberOfPoints(IntPtr session, IntPtr pointCloudHandle,
                 ref int pointCount);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPointCloud_getData(IntPtr session, IntPtr pointCloudHandle,
                 ref IntPtr pointCloudData);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPointCloud_release(IntPtr pointCloudHandle);
-#pragma warning restore 626
         }
     }
 }

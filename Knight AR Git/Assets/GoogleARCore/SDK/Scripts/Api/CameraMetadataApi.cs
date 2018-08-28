@@ -22,20 +22,14 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-#if UNITY_IOS
-    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
-    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
-#else
-    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
-    using IOSImport = GoogleARCoreInternal.DllImportNoop;
-#endif
-
-    using Marshal = System.Runtime.InteropServices.Marshal;
-
-    internal class CameraMetadataApi
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public class CameraMetadataApi
     {
         private NativeSession m_NativeSession;
 
@@ -142,22 +136,20 @@ namespace GoogleARCoreInternal
 
         private struct ExternApi
         {
-#pragma warning disable 626
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArImageMetadata_getNdkCameraMetadata(IntPtr session, IntPtr image_metadata,
                 ref IntPtr out_ndk_metadata);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArImageMetadata_release(IntPtr metadata);
 
-            [AndroidImport(ApiConstants.NdkCameraApi)]
+            [DllImport(ApiConstants.NdkCameraApi)]
             public static extern NdkCameraStatus ACameraMetadata_getConstEntry(IntPtr ndkCameraMetadata,
                 CameraMetadataTag tag, ref NdkCameraMetadata entry);
 
-            [AndroidImport(ApiConstants.NdkCameraApi)]
+            [DllImport(ApiConstants.NdkCameraApi)]
             public static extern NdkCameraStatus ACameraMetadata_getAllTags(IntPtr ndkCameraMetadata,
                 ref int numEntries, ref IntPtr tags);
-#pragma warning restore 626
         }
     }
 }

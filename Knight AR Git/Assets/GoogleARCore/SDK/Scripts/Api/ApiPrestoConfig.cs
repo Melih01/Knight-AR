@@ -20,71 +20,27 @@
 
 namespace GoogleARCoreInternal
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using GoogleARCore;
-    using GoogleARCoreInternal.CrossPlatform;
 
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
     Justification = "Internal")]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct ApiPrestoConfig
+    public struct ApiPrestoConfig
     {
         public ApiUpdateMode UpdateMode;
         public ApiPlaneFindingMode PlaneFindingMode;
         public ApiLightEstimationMode LightEstimationMode;
-        public ApiCloudAnchorMode CloudAnchorMode;
-        public IntPtr AugmentedImageDatabaseBytes;
-        public long AugmentedImageDatabaseSize;
 
-        /// <summary>
-        /// Wrap an ARCoreSessionConfig in an API config.
-        /// </summary>
-        /// <param name="config">Config to wrap.</param>
-        /// <param name="handle">
-        /// GCHandle pinning internal IntPtr. The caller is responsible for calling GCHandle.Free
-        /// when done with this config.
-        /// </param>
-        public ApiPrestoConfig(ARCoreSessionConfig config, out GCHandle handle)
+        public ApiPrestoConfig(ARCoreSessionConfig config)
         {
             UpdateMode = config.MatchCameraFramerate ?
                 ApiUpdateMode.Blocking : ApiUpdateMode.LatestCameraImage;
-            var planeFindingMode = ApiPlaneFindingMode.Disabled;
-            switch (config.PlaneFindingMode)
-            {
-            case DetectedPlaneFindingMode.Horizontal:
-                planeFindingMode = ApiPlaneFindingMode.Horizontal;
-                break;
-            case DetectedPlaneFindingMode.Vertical:
-                planeFindingMode = ApiPlaneFindingMode.Vertical;
-                break;
-            case DetectedPlaneFindingMode.HorizontalAndVertical:
-                planeFindingMode = ApiPlaneFindingMode.HorizontalAndVertical;
-                break;
-            default:
-                break;
-            }
-
-            PlaneFindingMode = planeFindingMode;
+            PlaneFindingMode = config.EnablePlaneFinding ?
+                ApiPlaneFindingMode.Horizontal : ApiPlaneFindingMode.Disabled;
             LightEstimationMode = config.EnableLightEstimation ?
                 ApiLightEstimationMode.AmbientIntensity : ApiLightEstimationMode.Disabled;
-            CloudAnchorMode = config.EnableCloudAnchor ?
-                ApiCloudAnchorMode.Enabled : ApiCloudAnchorMode.Disabled;
-
-            if (config.AugmentedImageDatabase != null)
-            {
-                byte[] rawData = config.AugmentedImageDatabase.GetRawData();
-                handle = GCHandle.Alloc(rawData, GCHandleType.Pinned);
-                AugmentedImageDatabaseBytes = handle.AddrOfPinnedObject();
-                AugmentedImageDatabaseSize = rawData.Length;
-            }
-            else
-            {
-                handle = new GCHandle();
-                AugmentedImageDatabaseBytes = IntPtr.Zero;
-                AugmentedImageDatabaseSize = 0;
-            }
         }
     }
 }

@@ -51,22 +51,22 @@ namespace GoogleARCore
         NotTracking = 102,
 
         /// <summary>
-        /// The ARCore session cannot begin tracking because a fatal error was encountered.
+        /// An ARCore session cannot begin tracking because a fatal error was encountered.
         /// </summary>
         FatalError = 200,
 
         /// <summary>
-        /// The ARCore session cannot begin tracking because the ARCore service APK is not available on the device.
+        /// An ARCore session cannot begin tracking because the ARCore service APK is not available on the device.
         /// </summary>
         ErrorApkNotAvailable = 201,
 
         /// <summary>
-        /// The ARCore session cannot begin tracking because the Android camera permission is not granted.
+        /// An ARCore session cannot begin tracking because the Android camera permission is not granted.
         /// </summary>
         ErrorPermissionNotGranted = 202,
 
         /// <summary>
-        /// The ARCore session cannot begin tracking because the session configuration supplied is not supported or no
+        /// An ARCore session cannot begin tracking because the session configuration supplied is not supported or no
         /// session configuration was supplied.
         /// </summary>
         ErrorSessionConfigurationNotSupported = 203,

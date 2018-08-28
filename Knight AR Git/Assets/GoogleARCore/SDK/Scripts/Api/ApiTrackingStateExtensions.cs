@@ -20,9 +20,13 @@
 
 namespace GoogleARCoreInternal
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using GoogleARCore;
 
-    internal static class ApiTrackingStateExtensions
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public static class ApiTrackingStateExtensions
     {
         public static TrackingState ToTrackingState(this ApiTrackingState apiTrackingState)
         {

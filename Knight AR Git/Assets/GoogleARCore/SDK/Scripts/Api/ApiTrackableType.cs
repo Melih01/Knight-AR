@@ -20,12 +20,15 @@
 
 namespace GoogleARCoreInternal
 {
-    internal enum ApiTrackableType
+    using System.Diagnostics.CodeAnalysis;
+
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public enum ApiTrackableType
     {
         Invalid = 0,
         BaseTrackable = 0x41520100,
         Plane = 0x41520101,
         Point = 0x41520102,
-        AugmentedImage = 0x41520104,
     }
 }

@@ -21,18 +21,15 @@
 namespace GoogleARCoreInternal
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-#if UNITY_IOS
-    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
-    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
-#else
-    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
-    using IOSImport = GoogleARCoreInternal.DllImportNoop;
-#endif
-
-    internal class PointApi
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public class PointApi
     {
         private NativeSession m_NativeSession;
 
@@ -50,25 +47,23 @@ namespace GoogleARCoreInternal
             return resultPose;
         }
 
-        public FeaturePointOrientationMode GetOrientationMode(IntPtr pointHandle)
+        public TrackedPointOrientationMode GetOrientationMode(IntPtr pointHandle)
         {
-            ApiFeaturePointOrientationMode orientationMode =
-                ApiFeaturePointOrientationMode.Identity;
+            ApiTrackedPointOrientationMode orientationMode =
+                ApiTrackedPointOrientationMode.Identity;
             ExternApi.ArPoint_getOrientationMode(m_NativeSession.SessionHandle, pointHandle,
                 ref orientationMode);
-            return orientationMode.ToFeaturePointOrientationMode();
+            return orientationMode.ToTrackedPointOrientationMode();
         }
 
         private struct ExternApi
         {
-#pragma warning disable 626
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPoint_getPose(IntPtr session, IntPtr point, IntPtr out_pose);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPoint_getOrientationMode(IntPtr session, IntPtr point,
-                ref ApiFeaturePointOrientationMode orientationMode);
-#pragma warning restore 626
+                ref ApiTrackedPointOrientationMode orientationMode);
         }
     }
 }

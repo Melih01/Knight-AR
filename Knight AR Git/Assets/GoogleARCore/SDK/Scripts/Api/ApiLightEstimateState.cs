@@ -20,7 +20,11 @@
 
 namespace GoogleARCoreInternal
 {
-    internal enum ApiLightEstimateState
+    using System.Diagnostics.CodeAnalysis;
+
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public enum ApiLightEstimateState
     {
         NotValid = 0,
         Valid = 1,

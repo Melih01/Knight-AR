@@ -22,30 +22,25 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-#if UNITY_IOS
-    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
-    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
-#else
-    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
-    using IOSImport = GoogleARCoreInternal.DllImportNoop;
-#endif
-
-    internal class PlaneApi
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public class PlaneApi
     {
         private const int k_MaxPolygonSize = 1024;
         private NativeSession m_NativeSession;
         private float[] m_TmpPoints;
-        private System.Runtime.InteropServices.GCHandle m_TmpPointsHandle;
+        private GCHandle m_TmpPointsHandle;
 
         public PlaneApi(NativeSession nativeSession)
         {
             m_NativeSession = nativeSession;
             m_TmpPoints = new float[k_MaxPolygonSize * 2];
-            m_TmpPointsHandle = System.Runtime.InteropServices.GCHandle.Alloc(m_TmpPoints,
-                System.Runtime.InteropServices.GCHandleType.Pinned);
+            m_TmpPointsHandle = GCHandle.Alloc(m_TmpPoints, GCHandleType.Pinned);
         }
 
         ~PlaneApi()
@@ -102,11 +97,11 @@ namespace GoogleARCoreInternal
             }
         }
 
-        public DetectedPlane GetSubsumedBy(IntPtr planeHandle)
+        public TrackedPlane GetSubsumedBy(IntPtr planeHandle)
         {
             IntPtr subsumerHandle = IntPtr.Zero;
             ExternApi.ArPlane_acquireSubsumedBy(m_NativeSession.SessionHandle, planeHandle, ref subsumerHandle);
-            return m_NativeSession.TrackableFactory(subsumerHandle) as DetectedPlane;
+            return m_NativeSession.TrackableFactory(subsumerHandle) as TrackedPlane;
         }
 
         public bool IsPoseInExtents(IntPtr planeHandle, Pose pose)
@@ -147,39 +142,37 @@ namespace GoogleARCoreInternal
 
         private struct ExternApi
         {
-#pragma warning disable 626
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPlane_getCenterPose(IntPtr sessionHandle, IntPtr planeHandle,
                 IntPtr poseHandle);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPlane_acquireSubsumedBy(IntPtr sessionHandle, IntPtr planeHandle,
                 ref IntPtr subsumerHandle);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPlane_getExtentX(IntPtr sessionHandle, IntPtr planeHandle,
                 ref float extentX);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPlane_getExtentZ(IntPtr sessionHandle, IntPtr planeHandle,
                 ref float extentZ);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPlane_getPolygonSize(IntPtr sessionHandle, IntPtr planeHandle,
                 ref int polygonSize);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPlane_getPolygon(IntPtr sessionHandle, IntPtr planeHandle,
                 IntPtr polygonXZ);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPlane_isPoseInExtents(IntPtr sessionHandle, IntPtr planeHandle,
                 IntPtr poseHandle, ref int isPoseInExtents);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArPlane_isPoseInPolygon(IntPtr sessionHandle, IntPtr planeHandle,
                 IntPtr poseHandle, ref int isPoseInPolygon);
-#pragma warning restore 626
         }
     }
 }

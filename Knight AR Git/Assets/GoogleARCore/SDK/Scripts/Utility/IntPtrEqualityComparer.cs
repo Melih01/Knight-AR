@@ -22,8 +22,14 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
-
-    internal class IntPtrEqualityComparer : IEqualityComparer<IntPtr>
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
+    using GoogleARCore;
+    using UnityEngine;
+    
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public class IntPtrEqualityComparer : IEqualityComparer<IntPtr>
     {
         public bool Equals(IntPtr intPtr1, IntPtr intPtr2)
         {

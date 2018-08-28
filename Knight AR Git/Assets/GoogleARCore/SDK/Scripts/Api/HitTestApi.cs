@@ -22,18 +22,14 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-#if UNITY_IOS
-    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
-    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
-#else
-    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
-    using IOSImport = GoogleARCoreInternal.DllImportNoop;
-#endif
-
-    internal class HitTestApi
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public class HitTestApi
     {
         private NativeSession m_NativeSession;
 
@@ -107,7 +103,7 @@ namespace GoogleARCoreInternal
                 m_NativeSession.PoseApi.Destroy(poseHandle);
                 return false;
             }
-            else if (trackable is DetectedPlane)
+            else if (trackable is TrackedPlane)
             {
                 if (m_NativeSession.PlaneApi.IsPoseInPolygon(trackableHandle, poseHandle))
                 {
@@ -121,11 +117,11 @@ namespace GoogleARCoreInternal
 
                 flag |= TrackableHitFlags.PlaneWithinInfinity;
             }
-            else if (trackable is FeaturePoint)
+            else if (trackable is TrackedPoint)
             {
-                var point = trackable as FeaturePoint;
+                var point = trackable as TrackedPoint;
                 flag |= TrackableHitFlags.FeaturePoint;
-                if (point.OrientationMode == FeaturePointOrientationMode.SurfaceNormal)
+                if (point.OrientationMode == TrackedPointOrientationMode.SurfaceNormal)
                 {
                     flag |= TrackableHitFlags.FeaturePointWithSurfaceNormal;
                 }
@@ -143,41 +139,42 @@ namespace GoogleARCoreInternal
 
         private struct ExternApi
         {
-#pragma warning disable 626
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            // Hit test function.
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_hitTest(IntPtr session,
                 IntPtr frame, float pixel_x, float pixel_y, IntPtr hit_result_list);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            // Hit list functions.
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResultList_create(IntPtr session, ref IntPtr out_hit_result_list);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResultList_destroy(IntPtr hit_result_list);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResultList_getSize(IntPtr session, IntPtr hit_result_list, ref int out_size);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResultList_getItem(IntPtr session, IntPtr hit_result_list,
                 int index, IntPtr out_hit_result);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            // Hit Result funcitons.
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResult_create(IntPtr session, ref IntPtr out_hit_result);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResult_destroy(IntPtr hit_result);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResult_getDistance(IntPtr session, IntPtr hit_result,
                 ref float out_distance);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResult_getHitPose(IntPtr session, IntPtr hit_result, IntPtr out_pose);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResult_acquireTrackable(IntPtr session, IntPtr hit_result,
                 ref IntPtr out_trackable);
-#pragma warning restore 626
         }
     }
 }

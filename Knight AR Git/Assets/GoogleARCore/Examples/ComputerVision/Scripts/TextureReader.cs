@@ -17,11 +17,13 @@
 //
 // </copyright>
 //-----------------------------------------------------------------------
-namespace GoogleARCore.Examples.ComputerVision
+namespace GoogleARCore.TextureReader
 {
     using System;
+    using System.Collections.Generic;
     using GoogleARCore;
     using UnityEngine;
+    using UnityEngine.Rendering;
 
     /// <summary>
     /// Component that provides CPU access to ArCore GPU texture.
@@ -37,7 +39,7 @@ namespace GoogleARCore.Examples.ComputerVision
         /// Output image height, in pixels.
         /// </summary>
         public int ImageHeight = k_ARCoreTextureHeight;
-
+        
         /// <summary>
         /// Output image sampling option.
         /// </summary>
@@ -70,7 +72,7 @@ namespace GoogleARCore.Examples.ComputerVision
         /// <summary>
         /// Callback function handle for receiving the output images.
         /// </summary>
-        public event OnImageAvailableCallbackFunc OnImageAvailableCallback = null;
+        public event OnImageAvailableCallbackFunc OnImageAvailableCallback = null;   
 
         /// <summary>
         /// Options to sample the output image.
@@ -181,12 +183,8 @@ namespace GoogleARCore.Examples.ComputerVision
             }
 
             // Submit reading request for the next frame.
-            if (Frame.CameraImage.Texture != null)
-            {
-                int textureId = Frame.CameraImage.Texture.GetNativeTexturePtr().ToInt32();
-                m_ImageBufferIndex =
-                    m_TextureReaderApi.SubmitFrame(textureId, k_ARCoreTextureWidth, k_ARCoreTextureHeight);
-            }
+            int textureId = Frame.CameraImage.Texture.GetNativeTexturePtr().ToInt32();
+            m_ImageBufferIndex = m_TextureReaderApi.SubmitFrame(textureId, k_ARCoreTextureWidth, k_ARCoreTextureHeight);
 
             // Set next command.
             m_Command = CommandType.ProcessNextFrame;
@@ -203,7 +201,7 @@ namespace GoogleARCore.Examples.ComputerVision
                 m_TextureReaderApi = null;
             }
         }
-
+        
         /// <summary>
         /// This function is called when the behaviour becomes disabled or inactive.
         /// </summary>

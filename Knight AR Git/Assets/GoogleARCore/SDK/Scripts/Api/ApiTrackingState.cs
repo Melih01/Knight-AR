@@ -20,7 +20,11 @@
 
 namespace GoogleARCoreInternal
 {
-    internal enum ApiTrackingState
+    using System.Diagnostics.CodeAnalysis;
+
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public enum ApiTrackingState
     {
         Tracking = 0,
         Paused = 1,

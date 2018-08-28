@@ -35,9 +35,9 @@ namespace GoogleARCore
         public ARCoreSessionConfig SessionConfig;
 
         /// <summary>
-        /// Unity Start.
+        /// Unity Awake.
         /// </summary>
-        public void Start()
+        public void Awake()
         {
             LifecycleManager.Instance.CreateSession(this);
         }
@@ -47,7 +47,7 @@ namespace GoogleARCore
         /// </summary>
         public void OnDestroy()
         {
-            LifecycleManager.Instance.ResetSession();
+            LifecycleManager.Instance.DestroySession();
         }
 
         /// <summary>

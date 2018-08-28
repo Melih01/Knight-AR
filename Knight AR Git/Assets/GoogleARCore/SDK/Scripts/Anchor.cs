@@ -32,12 +32,13 @@ namespace GoogleARCore
     /// </summary>
     public class Anchor : MonoBehaviour
     {
-        private static Dictionary<IntPtr, Anchor> s_AnchorDict =
-            new Dictionary<IntPtr, Anchor>(new IntPtrEqualityComparer());
+        private static Dictionary<IntPtr, Anchor> s_AnchorDict = new Dictionary<IntPtr, Anchor>();
+
+        private IntPtr m_AnchorNativeHandle = IntPtr.Zero;
+
+        private NativeSession m_NativeSession;
 
         private TrackingState m_LastFrameTrackingState = TrackingState.Stopped;
-
-        private bool m_IsSessionDestroyed = false;
 
         /// <summary>
         /// Gets the tracking state of the anchor.
@@ -46,9 +47,10 @@ namespace GoogleARCore
         {
             get
             {
-                // TODO (b/73256094): Remove isTracking when the bug is fixed.
-                var isTracking = LifecycleManager.Instance.IsTracking;
-                if (_IsSessionDestroyed())
+                // TODO (b/73256094): Remove isTracking when fixed.
+                var nativeSession = LifecycleManager.Instance.NativeSession;
+                var isTracking = LifecycleManager.Instance.SessionStatus == SessionStatus.Tracking;
+                if (nativeSession != m_NativeSession)
                 {
                     // Anchors from another session are considered stopped.
                     return TrackingState.Stopped;
@@ -59,16 +61,15 @@ namespace GoogleARCore
                     return TrackingState.Paused;
                 }
 
-                return m_NativeSession.AnchorApi.GetTrackingState(m_NativeHandle);
+                return m_NativeSession.AnchorApi.GetTrackingState(m_AnchorNativeHandle);
             }
         }
 
-        internal NativeSession m_NativeSession { get; private set; }
+        //// @cond EXCLUDE_FROM_DOXYGEN
 
-        internal IntPtr m_NativeHandle { get; private set; }
-
-        internal static Anchor Factory(NativeSession nativeApi, IntPtr anchorNativeHandle,
-            bool isCreate = true)
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+        Justification = "Internal")]
+        public static Anchor AnchorFactory(IntPtr anchorNativeHandle, NativeSession nativeApi, bool isCreate = true)
         {
             if (anchorNativeHandle == IntPtr.Zero)
             {
@@ -87,7 +88,7 @@ namespace GoogleARCore
             {
                Anchor anchor = (new GameObject()).AddComponent<Anchor>();
                anchor.gameObject.name = "Anchor";
-               anchor.m_NativeHandle = anchorNativeHandle;
+               anchor.m_AnchorNativeHandle = anchorNativeHandle;
                anchor.m_NativeSession = nativeApi;
                anchor.Update();
 
@@ -98,24 +99,18 @@ namespace GoogleARCore
             return null;
         }
 
-        /// <summary>
-        /// The Unity Update method.
-        /// </summary>
+        //// @endcond
+
         private void Update()
         {
-            if (m_NativeHandle == IntPtr.Zero)
+            if (m_AnchorNativeHandle == IntPtr.Zero)
             {
                 Debug.LogError("Anchor components instantiated outside of ARCore are not supported. " +
                     "Please use a 'Create' method within ARCore to instantiate anchors.");
                 return;
             }
 
-            if (_IsSessionDestroyed())
-            {
-                return;
-            }
-
-            var pose = m_NativeSession.AnchorApi.GetPose(m_NativeHandle);
+            var pose = m_NativeSession.AnchorApi.GetPose(m_AnchorNativeHandle);
             transform.position = pose.position;
             transform.rotation = pose.rotation;
 
@@ -134,31 +129,13 @@ namespace GoogleARCore
 
         private void OnDestroy()
         {
-            if (m_NativeHandle == IntPtr.Zero)
+            if (m_AnchorNativeHandle == IntPtr.Zero)
             {
                 return;
             }
 
-            s_AnchorDict.Remove(m_NativeHandle);
-            m_NativeSession.AnchorApi.Detach(m_NativeHandle);
-            m_NativeSession.AnchorApi.Release(m_NativeHandle);
-        }
-
-        private bool _IsSessionDestroyed()
-        {
-            if (!m_IsSessionDestroyed)
-            {
-                var nativeSession = LifecycleManager.Instance.NativeSession;
-                if (nativeSession != m_NativeSession)
-                {
-                    Debug.LogErrorFormat("The session which created this anchor has been destroyed. " +
-                    "The anchor on GameObject {0} can no longer update.",
-                        this.gameObject != null ? this.gameObject.name : "Unknown");
-                    m_IsSessionDestroyed = true;
-                }
-            }
-
-            return m_IsSessionDestroyed;
+            s_AnchorDict.Remove(m_AnchorNativeHandle);
+            m_NativeSession.AnchorApi.Release(m_AnchorNativeHandle);
         }
     }
 }

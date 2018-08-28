@@ -21,9 +21,12 @@
 namespace GoogleARCoreInternal
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using GoogleARCore;
 
-    internal static class ApiAvailabilityExtensions
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public static class ApiAvailabilityExtensions
     {
         public static ApkAvailabilityStatus ToApkAvailabilityStatus(this ApiAvailability apiStatus)
         {

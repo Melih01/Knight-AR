@@ -21,18 +21,13 @@
 namespace GoogleARCoreInternal
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
     using GoogleARCore;
-    using UnityEngine;
 
-#if UNITY_IOS
-    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
-    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
-#else
-    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
-    using IOSImport = GoogleARCoreInternal.DllImportNoop;
-#endif
-
-    internal class LightEstimateApi
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public class LightEstimateApi
     {
         private NativeSession m_NativeSession;
 
@@ -68,36 +63,22 @@ namespace GoogleARCoreInternal
             return pixelIntensity;
         }
 
-        public Color GetColorCorrection(IntPtr lightEstimateHandle)
-        {
-            Color colorCorrection = Color.black;
-            ExternApi.ArLightEstimate_getColorCorrection(m_NativeSession.SessionHandle,
-                lightEstimateHandle, ref colorCorrection);
-            return colorCorrection;
-        }
-
         private struct ExternApi
         {
-#pragma warning disable 626
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArLightEstimate_create(IntPtr sessionHandle,
                 ref IntPtr lightEstimateHandle);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArLightEstimate_destroy(IntPtr lightEstimateHandle);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArLightEstimate_getState(IntPtr sessionHandle,
                 IntPtr lightEstimateHandle, ref ApiLightEstimateState state);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArLightEstimate_getPixelIntensity(IntPtr sessionHandle,
                 IntPtr lightEstimateHandle, ref float pixelIntensity);
-
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArLightEstimate_getColorCorrection(IntPtr sessionHandle,
-                IntPtr lightEstimateHandle, ref Color colorCorrection);
-#pragma warning restore 626
         }
     }
 }

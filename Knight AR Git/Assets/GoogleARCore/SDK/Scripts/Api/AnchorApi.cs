@@ -21,12 +21,15 @@
 namespace GoogleARCoreInternal
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using GoogleARCore;
-    using GoogleARCoreInternal.CrossPlatform;
     using UnityEngine;
 
-    internal class AnchorApi
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public class AnchorApi
     {
         private NativeSession m_NativeSession;
 
@@ -52,29 +55,9 @@ namespace GoogleARCoreInternal
             return trackingState.ToTrackingState();
         }
 
-        public ApiCloudAnchorState GetCloudAnchorState(IntPtr anchorHandle)
-        {
-            ApiCloudAnchorState cloudState = ApiCloudAnchorState.None;
-            ExternApi.ArAnchor_getCloudAnchorState(m_NativeSession.SessionHandle, anchorHandle, ref cloudState);
-            return cloudState;
-        }
-
-        public string GetCloudAnchorId(IntPtr anchorHandle)
-        {
-            IntPtr cloudIdHandle = IntPtr.Zero;
-            ExternApi.ArAnchor_acquireCloudAnchorId(m_NativeSession.SessionHandle, anchorHandle, ref cloudIdHandle);
-
-            var result = Marshal.PtrToStringAnsi(cloudIdHandle);
-            ExternApi.ArString_release(cloudIdHandle);
-            return result;
-        }
-
         public void Detach(IntPtr anchorHandle)
         {
-            if (LifecycleManager.Instance.NativeSession == m_NativeSession)
-            {
-                ExternApi.ArAnchor_detach(m_NativeSession.SessionHandle, anchorHandle);
-            }
+            ExternApi.ArAnchor_detach(m_NativeSession.SessionHandle, anchorHandle);
         }
 
         public void Release(IntPtr anchorHandle)
@@ -119,21 +102,10 @@ namespace GoogleARCoreInternal
                 ref ApiTrackingState trackingState);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArAnchor_getCloudAnchorState(IntPtr sessionHandle,
-                IntPtr anchorHandle, ref ApiCloudAnchorState state);
-
-            [DllImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArAnchor_acquireCloudAnchorId(IntPtr sessionHandle,
-                IntPtr anchorHandle, ref IntPtr hostingIdHandle);
-
-            [DllImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArAnchor_release(IntPtr anchorHandle);
-
-            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArAnchor_detach(IntPtr sessionHandle, IntPtr anchorHandle);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
-            public static extern void ArString_release(IntPtr stringHandle);
+            public static extern void ArAnchor_release(IntPtr anchorHandle);
 
             [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArAnchorList_create(IntPtr sessionHandle, ref IntPtr outputAnchorListHandle);

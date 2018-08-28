@@ -21,18 +21,15 @@
 namespace GoogleARCoreInternal
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-#if UNITY_IOS
-    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
-    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
-#else
-    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
-    using IOSImport = GoogleARCoreInternal.DllImportNoop;
-#endif
-
-    internal class CameraApi
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
+    Justification = "Internal")]
+    public class CameraApi
     {
         private NativeSession m_NativeSession;
 
@@ -79,21 +76,19 @@ namespace GoogleARCoreInternal
 
         private struct ExternApi
         {
-#pragma warning disable 626
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCamera_getTrackingState(IntPtr sessionHandle, IntPtr cameraHandle,
                 ref ApiTrackingState outTrackingState);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCamera_getDisplayOrientedPose(IntPtr sessionHandle, IntPtr cameraHandle, IntPtr outPose);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCamera_getProjectionMatrix(IntPtr sessionHandle, IntPtr cameraHandle,
                 float near, float far, ref Matrix4x4 outMatrix);
 
-            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            [DllImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArCamera_release(IntPtr cameraHandle);
-#pragma warning restore 626
         }
     }
 }
