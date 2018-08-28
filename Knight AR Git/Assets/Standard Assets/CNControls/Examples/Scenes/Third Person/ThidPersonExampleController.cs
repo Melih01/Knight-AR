@@ -30,8 +30,8 @@ public class ThidPersonExampleController : MonoBehaviour
             var angle = Mathf.Atan2(inputVector.x, inputVector.y) * Mathf.Rad2Deg;
             _transform.rotation = Quaternion.Euler(0, angle, 0);
 
-            movementVector += Physics.gravity;
             _characterController.Move(movementVector * Time.deltaTime * MovementSpeed * inputMoveVector);
+            movementVector += Physics.gravity;
             inputMoveVector = inputVector.magnitude;
         }
         else
