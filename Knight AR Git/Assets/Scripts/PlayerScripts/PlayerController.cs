@@ -5,8 +5,7 @@ public class PlayerController : CustomMonoBehaviour, IDamageable
 {
     public PlayerAttributesController AttributesController { get; set; }
     public PlayerAnimationController AnimationController { get; set; }
-
-    public bool IsCanControl { get; set; } = true;
+    public PlayerMovementController PlayerMovementController { get; set; }
 
     public event System.Action<PlayerController> PlayerGetDamaged;
     public event System.Action<PlayerController> PlayerDied;
@@ -18,58 +17,16 @@ public class PlayerController : CustomMonoBehaviour, IDamageable
     [SerializeField]
     Transform damagePopupSpawnPoint;
 
-    float inputMoveSpeed;
-    bool isWillMove = false;
-
-    CharacterController characterController;
-
     void Awake()
     {
-        characterController = GetComponent<CharacterController>();
         AttributesController = GetComponent<PlayerAttributesController>();
         AnimationController = GetComponent<PlayerAnimationController>();
-
-        characterController.detectCollisions = false;
+        PlayerMovementController = GetComponent<PlayerMovementController>();
     }
 
     void Start()
     {
         GameManager.instance.playerController = this;
-    }
-
-    void Update()
-    {
-        Move();
-        AnimationController.SetSpeed(inputMoveSpeed);
-    }
-
-    void Move()
-    {
-        if (IsCanControl)
-        {
-            var inputVector = new Vector2(CnInputManager.GetAxis("Horizontal"), CnInputManager.GetAxis("Vertical"));
-            Vector3 movementVector = inputVector;
-
-            isWillMove = inputVector != Vector2.zero ? true : false;
-
-            if (isWillMove)
-            {
-                var angle = inputVector.GetAngle();
-                transform.rotation = Quaternion.Euler(0, angle, 0);
-
-                movementVector += Physics.gravity;
-                characterController.Move(movementVector * Time.deltaTime * AttributesController.speed);
-                inputMoveSpeed = inputVector.magnitude;
-            }
-            else
-            {
-                inputMoveSpeed = Vector3.zero.magnitude;
-            }
-        }
-        else
-        {
-            inputMoveSpeed = Vector3.zero.magnitude;
-        }
     }
 
     public virtual void Die()
@@ -99,12 +56,13 @@ public class PlayerController : CustomMonoBehaviour, IDamageable
 
     public void ApplyDamage(float damage, DamageElement damageElement = DamageElement.Physical)
     {
-        if (damage > 0)
-            GameManager.instance.objectPoolManager.Spawn(ObjectPool.DamagePopup, damagePopupSpawnPoint, damage);
+        var TotalDamage = damage - AttributesController.armor;
+
+        //if (damage > 0)
+        GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.DamagePopup, damagePopupSpawnPoint, TotalDamage);
 
         if (AttributesController.health > 0)
         {
-            var TotalDamage = damage - AttributesController.armor;
             AttributesController.health -= TotalDamage;
             PlayerGetDamaged?.Invoke(this);
         }

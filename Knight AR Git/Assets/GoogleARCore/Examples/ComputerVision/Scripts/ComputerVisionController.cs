@@ -18,52 +18,93 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace GoogleARCore.TextureReader
+namespace GoogleARCore.Examples.ComputerVision
 {
     using System;
     using System.Collections.Generic;
     using GoogleARCore;
     using UnityEngine;
-    using UnityEngine.Rendering;
+    using UnityEngine.UI;
+
+    #if UNITY_EDITOR
+    // Set up touch input propagation while using Instant Preview in the editor.
+    using Input = InstantPreviewInput;
+    #endif  // UNITY_EDITOR
 
     /// <summary>
-    /// Controlls the ComputerVision example.
+    /// Controller for the ComputerVision example that accesses the CPU camera image (i.e. image bytes), performs
+    /// edge detection on the image, and renders an overlay to the screen.
     /// </summary>
     public class ComputerVisionController : MonoBehaviour
     {
         /// <summary>
-        /// The TextureReader component instance.
+        /// The ARCoreSession monobehavior that manages the ARCore session.
         /// </summary>
-        public TextureReader TextureReaderComponent;
+        public ARCoreSession ARSessionManager;
 
         /// <summary>
-        /// Background renderer to inject our texture into.
+        /// An image using a material with EdgeDetectionBackground.shader to render a
+        /// percentage of the edge detection background to the screen over the standard camera background.
         /// </summary>
-        public ARCoreBackgroundRenderer BackgroundRenderer;
+        public Image EdgeDetectionBackgroundImage;
 
         /// <summary>
-        /// True if the app is in the process of quitting due to an ARCore connection error, otherwise false.
+        /// A Text box that is used to output the camera intrinsics values.
         /// </summary>
+        public Text CameraIntrinsicsOutput;
+
+        /// <summary>
+        /// A toggle that is used to select the low resolution CPU camera configuration.
+        /// </summary>
+        public Toggle LowResConfigToggle;
+
+        /// <summary>
+        /// A toggle that is used to select the high resolution CPU camera configuration.
+        /// </summary>
+        public Toggle HighResConfigToggle;
+
+        /// <summary>
+        /// A PointClickHandler to detect touch on the entire screen.
+        /// </summary>
+        public PointClickHandler ScreenTouchHandler;
+
+        /// <summary>
+        /// A buffer that stores the result of performing edge detection on the camera image each frame.
+        /// </summary>
+        private byte[] m_EdgeDetectionResultImage = null;
+
+        /// <summary>
+        /// Texture created from the result of running edge detection on the camera image bytes.
+        /// </summary>
+        private Texture2D m_EdgeDetectionBackgroundTexture = null;
+
+        /// <summary>
+        /// These UVs are applied to the background material to crop and rotate 'm_EdgeDetectionBackgroundTexture'
+        /// to match the aspect ratio and rotation of the device display.
+        /// </summary>
+        private DisplayUvCoords m_CameraImageToDisplayUvTransformation;
+
+        private ScreenOrientation m_CachedOrientation = ScreenOrientation.Unknown;
+        private Vector2 m_CachedScreenDimensions = Vector2.zero;
         private bool m_IsQuitting = false;
+        private bool m_UseHighResCPUTexture = false;
+        private ARCoreSession.OnChooseCameraConfigurationDelegate m_OnChoseCameraConfiguration = null;
+        private bool m_Resolutioninitialized = false;
 
         /// <summary>
-        /// Texture created from filtered camera image.
-        /// </summary>
-        private Texture2D m_TextureToRender = null;
-        private int m_ImageWidth = 0;
-        private int m_ImageHeight = 0;
-        private byte[] m_EdgeImage = null;
-        private float m_SwipeMomentum = 0.0f;
-
-        /// <summary>
-        /// Start is called on the frame when a script is enabled just before
-        /// any of the Update methods is called the first time.
+        /// The Unity Start() method.
         /// </summary>
         public void Start()
         {
-            // Registers the TextureReader callback.
-            TextureReaderComponent.OnImageAvailableCallback += OnImageAvailable;
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
+            ScreenTouchHandler.OnPointClickDetected += _OnBackgroundClicked;
+
+            // Register the callback to set camera config before arcore session is enabled.
+            m_OnChoseCameraConfiguration = _ChooseCameraConfiguration;
+            ARSessionManager.RegisterChooseCameraConfigurationCallback(m_OnChoseCameraConfiguration);
+
+            ARSessionManager.enabled = true;
         }
 
         /// <summary>
@@ -77,120 +118,262 @@ namespace GoogleARCore.TextureReader
             }
 
             _QuitOnConnectionErrors();
-            _HandleTouchInput();
-        }
 
-        /// <summary>
-        /// TextureReader callback handler.
-        /// </summary>
-        /// <param name="format">The format of the image.</param>
-        /// <param name="width">Width of the image, in pixels.</param>
-        /// <param name="height">Height of the image, in pixels.</param>
-        /// <param name="pixelBuffer">Pointer to raw image buffer.</param>
-        /// <param name="bufferSize">The size of the image buffer, in bytes.</param>
-        public void OnImageAvailable(TextureReaderApi.ImageFormatType format, int width, int height, IntPtr pixelBuffer, int bufferSize)
-        {
-            if (format != TextureReaderApi.ImageFormatType.ImageFormatGrayscale)
+            // Change the CPU resolution checkbox visibility.
+            LowResConfigToggle.gameObject.SetActive(EdgeDetectionBackgroundImage.enabled);
+            HighResConfigToggle.gameObject.SetActive(EdgeDetectionBackgroundImage.enabled);
+
+            if (!Session.Status.IsValid())
             {
-                Debug.Log("No edge detected due to incorrect image format.");
                 return;
             }
 
-            if (m_TextureToRender == null || m_EdgeImage == null || m_ImageWidth != width || m_ImageHeight != height)
+            using (var image = Frame.CameraImage.AcquireCameraImageBytes())
             {
-                m_TextureToRender = new Texture2D(width, height, TextureFormat.R8, false, false);
-                m_EdgeImage = new byte[width * height];
-                m_ImageWidth = width;
-                m_ImageHeight = height;
+                if (!image.IsAvailable)
+                {
+                    return;
+                }
+
+                _OnImageAvailable(image.Width, image.Height, image.YRowStride, image.Y, 0);
+            }
+
+            var cameraIntrinsics = EdgeDetectionBackgroundImage.enabled
+                ? Frame.CameraImage.ImageIntrinsics : Frame.CameraImage.TextureIntrinsics;
+            string intrinsicsType = EdgeDetectionBackgroundImage.enabled ? "Image" : "Texture";
+            CameraIntrinsicsOutput.text = _CameraIntrinsicsToString(cameraIntrinsics, intrinsicsType);
+        }
+
+        /// <summary>
+        /// Handles the low resolution checkbox toggle changing.
+        /// </summary>
+        /// <param name="newValue">The new value for the checkbox.</param>
+        public void OnLowResolutionCheckboxValueChanged(bool newValue)
+        {
+            m_UseHighResCPUTexture = !newValue;
+            HighResConfigToggle.isOn = !newValue;
+
+            // Pause and resume the ARCore session to apply the camera configuration.
+            ARSessionManager.enabled = false;
+            ARSessionManager.enabled = true;
+        }
+
+        /// <summary>
+        /// Handles the high resolution checkbox toggle changing.
+        /// </summary>
+        /// <param name="newValue">The new value for the checkbox.</param>
+        public void OnHighResolutionCheckboxValueChanged(bool newValue)
+        {
+            m_UseHighResCPUTexture = newValue;
+            LowResConfigToggle.isOn = !newValue;
+
+            // Pause and resume the ARCore session to apply the camera configuration.
+            ARSessionManager.enabled = false;
+            ARSessionManager.enabled = true;
+        }
+
+        /// <summary>
+        /// Hanldes the auto focus checkbox value changed.
+        /// </summary>
+        /// <param name="autoFocusEnabled">If set to <c>true</c> auto focus will be enabled.</param>
+        public void OnAutoFocusCheckboxValueChanged(bool autoFocusEnabled)
+        {
+            var config = ARSessionManager.SessionConfig;
+            if (config != null)
+            {
+                config.CameraFocusMode = autoFocusEnabled ? CameraFocusMode.Auto : CameraFocusMode.Fixed;
+            }
+        }
+
+        /// <summary>
+        /// Function get called when the background image got clicked.
+        /// </summary>
+        private void _OnBackgroundClicked()
+        {
+            EdgeDetectionBackgroundImage.enabled = !EdgeDetectionBackgroundImage.enabled;
+        }
+
+        /// <summary>
+        /// Handles a new CPU image.
+        /// </summary>
+        /// <param name="width">Width of the image, in pixels.</param>
+        /// <param name="height">Height of the image, in pixels.</param>
+        /// <param name="rowStride">Row stride of the image, in pixels.</param>
+        /// <param name="pixelBuffer">Pointer to raw image buffer.</param>
+        /// <param name="bufferSize">The size of the image buffer, in bytes.</param>
+        private void _OnImageAvailable(int width, int height, int rowStride, IntPtr pixelBuffer, int bufferSize)
+        {
+            if (!EdgeDetectionBackgroundImage.enabled)
+            {
+                return;
+            }
+
+            if (m_EdgeDetectionBackgroundTexture == null || m_EdgeDetectionResultImage == null ||
+                m_EdgeDetectionBackgroundTexture.width != width || m_EdgeDetectionBackgroundTexture.height != height)
+            {
+                m_EdgeDetectionBackgroundTexture = new Texture2D(width, height, TextureFormat.R8, false, false);
+                m_EdgeDetectionResultImage = new byte[width * height];
+                _UpdateCameraImageToDisplayUVs();
+            }
+
+            if (m_CachedOrientation != Screen.orientation || m_CachedScreenDimensions.x != Screen.width ||
+                m_CachedScreenDimensions.y != Screen.height)
+            {
+                _UpdateCameraImageToDisplayUVs();
+                m_CachedOrientation = Screen.orientation;
+                m_CachedScreenDimensions = new Vector2(Screen.width, Screen.height);
             }
 
             // Detect edges within the image.
-            if (EdgeDetector.Detect(m_EdgeImage, pixelBuffer, width, height))
+            if (EdgeDetector.Detect(m_EdgeDetectionResultImage, pixelBuffer, width, height, rowStride))
             {
                 // Update the rendering texture with the edge image.
-                m_TextureToRender.LoadRawTextureData(m_EdgeImage);
-                m_TextureToRender.Apply();
-                BackgroundRenderer.BackgroundMaterial.SetTexture("_ImageTex", m_TextureToRender);
+                m_EdgeDetectionBackgroundTexture.LoadRawTextureData(m_EdgeDetectionResultImage);
+                m_EdgeDetectionBackgroundTexture.Apply();
+                EdgeDetectionBackgroundImage.material.SetTexture("_ImageTex", m_EdgeDetectionBackgroundTexture);
+
+                const string TOP_LEFT_RIGHT = "_UvTopLeftRight";
+                const string BOTTOM_LEFT_RIGHT = "_UvBottomLeftRight";
+                EdgeDetectionBackgroundImage.material.SetVector(TOP_LEFT_RIGHT, new Vector4(
+                    m_CameraImageToDisplayUvTransformation.TopLeft.x,
+                    m_CameraImageToDisplayUvTransformation.TopLeft.y,
+                    m_CameraImageToDisplayUvTransformation.TopRight.x,
+                    m_CameraImageToDisplayUvTransformation.TopRight.y));
+                EdgeDetectionBackgroundImage.material.SetVector(BOTTOM_LEFT_RIGHT, new Vector4(
+                    m_CameraImageToDisplayUvTransformation.BottomLeft.x,
+                    m_CameraImageToDisplayUvTransformation.BottomLeft.y,
+                    m_CameraImageToDisplayUvTransformation.BottomRight.x,
+                    m_CameraImageToDisplayUvTransformation.BottomRight.y));
             }
         }
 
         /// <summary>
-        /// Show an Android toast message.
+        /// Updates the uv transformation from the camera image orientation and aspect to the display's.
         /// </summary>
-        /// <param name="message">Message string to show in the toast.</param>
-        private static void _ShowAndroidToastMessage(string message)
+        private void _UpdateCameraImageToDisplayUVs()
         {
-            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            int cameraToDisplayRotation = _GetCameraImageToDisplayRotation();
 
-            if (unityActivity != null)
+            float uBorder;
+            float vBorder;
+            _GetUvBorders(out uBorder, out vBorder);
+
+            switch (cameraToDisplayRotation)
             {
-                AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
-                unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
-                {
-                    AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity,
-                        message, 0);
-                    toastObject.Call("show");
-                }));
+            case 90:
+                m_CameraImageToDisplayUvTransformation.TopLeft = new Vector2(1 - uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.TopRight = new Vector2(1 - uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomRight = new Vector2(uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomLeft = new Vector2(uBorder, 1 - vBorder);
+                break;
+            case 180:
+                m_CameraImageToDisplayUvTransformation.TopLeft = new Vector2(uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.TopRight = new Vector2(1 - uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomRight = new Vector2(1 - uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomLeft = new Vector2(uBorder, vBorder);
+                break;
+            case 270:
+                m_CameraImageToDisplayUvTransformation.TopLeft = new Vector2(uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.TopRight = new Vector2(uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomRight = new Vector2(1 - uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomLeft = new Vector2(1 - uBorder, vBorder);
+                break;
+            default:
+            case 0:
+                m_CameraImageToDisplayUvTransformation.TopLeft = new Vector2(1 - uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.TopRight = new Vector2(uBorder, vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomRight = new Vector2(uBorder, 1 - vBorder);
+                m_CameraImageToDisplayUvTransformation.BottomLeft = new Vector2(1 - uBorder, 1 - vBorder);
+                break;
             }
         }
 
         /// <summary>
-        /// Handles detecting touch input to control the edge detection effect.
+        /// Gets the rotation that needs to be applied to the device camera image in order for it to match
+        /// the current orientation of the display.
         /// </summary>
-        private void _HandleTouchInput()
+        /// <returns>The needed rotation.</returns>
+        private int _GetCameraImageToDisplayRotation()
         {
-            const float SWIPE_SCALING_FACTOR = 1.15f;
-            const float INTERTIAL_CANCELING_FACTOR = 2.0f;
-            const float MINIMUM_MOMENTUM = .01f;
+#if !UNITY_EDITOR
+            AndroidJavaClass cameraClass = new AndroidJavaClass("android.hardware.Camera");
+            AndroidJavaClass cameraInfoClass = new AndroidJavaClass("android.hardware.Camera$CameraInfo");
+            AndroidJavaObject cameraInfo = new AndroidJavaObject("android.hardware.Camera$CameraInfo");
+            cameraClass.CallStatic("getCameraInfo", cameraInfoClass.GetStatic<int>("CAMERA_FACING_BACK"),
+                cameraInfo);
+            int cameraRotationToNaturalDisplayOrientation = cameraInfo.Get<int>("orientation");
 
-            if (Input.touchCount == 0)
+            AndroidJavaClass contextClass = new AndroidJavaClass("android.content.Context");
+            AndroidJavaClass unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject unityActivity = unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
+            AndroidJavaObject windowManager =
+                unityActivity.Call<AndroidJavaObject>("getSystemService",
+                contextClass.GetStatic<string>("WINDOW_SERVICE"));
+
+            AndroidJavaClass surfaceClass = new AndroidJavaClass("android.view.Surface");
+            int displayRotationFromNaturalEnum = windowManager
+                .Call<AndroidJavaObject>("getDefaultDisplay").Call<int>("getRotation");
+
+            int displayRotationFromNatural = 0;
+            if (displayRotationFromNaturalEnum == surfaceClass.GetStatic<int>("ROTATION_90"))
             {
-                m_SwipeMomentum /= INTERTIAL_CANCELING_FACTOR;
+                displayRotationFromNatural = 90;
+            }
+            else if (displayRotationFromNaturalEnum == surfaceClass.GetStatic<int>("ROTATION_180"))
+            {
+                displayRotationFromNatural = 180;
+            }
+            else if (displayRotationFromNaturalEnum == surfaceClass.GetStatic<int>("ROTATION_270"))
+            {
+                displayRotationFromNatural = 270;
+            }
+
+            return (cameraRotationToNaturalDisplayOrientation + displayRotationFromNatural) % 360;
+#else  // !UNITY_EDITOR
+            // Using Instant Preview in the Unity Editor, the display orientation is always portrait.
+            return 0;
+#endif  // !UNITY_EDITOR
+        }
+
+        /// <summary>
+        /// Gets the percentage of space needed to be cropped on the device camera image to match the display
+        /// aspect ratio.
+        /// </summary>
+        /// <param name="uBorder">The cropping of the 'u' dimension.</param>
+        /// <param name="vBorder">The cropping of the 'v' dimension.</param>
+        private void _GetUvBorders(out float uBorder, out float vBorder)
+        {
+            int imageWidth = m_EdgeDetectionBackgroundTexture.width;
+            int imageHeight = m_EdgeDetectionBackgroundTexture.height;
+
+            float screenAspectRatio;
+            var cameraToDisplayRotation = _GetCameraImageToDisplayRotation();
+            if (cameraToDisplayRotation == 90 || cameraToDisplayRotation == 270)
+            {
+                screenAspectRatio = (float)Screen.height / Screen.width;
             }
             else
             {
-                m_SwipeMomentum = _GetTouchDelta();
-                m_SwipeMomentum *= SWIPE_SCALING_FACTOR;
+                screenAspectRatio = (float)Screen.width / Screen.height;
             }
 
-            if (Mathf.Abs(m_SwipeMomentum) < MINIMUM_MOMENTUM)
+            var imageAspectRatio = (float)imageWidth / imageHeight;
+            var croppedWidth = 0.0f;
+            var croppedHeight = 0.0f;
+
+            if (screenAspectRatio < imageAspectRatio)
             {
-                m_SwipeMomentum = 0;
+                croppedWidth = imageHeight * screenAspectRatio;
+                croppedHeight = imageHeight;
             }
-
-            var overlayPercentage = BackgroundRenderer.BackgroundMaterial.GetFloat("_OverlayPercentage");
-            overlayPercentage -= m_SwipeMomentum;
-            BackgroundRenderer.BackgroundMaterial.SetFloat("_OverlayPercentage", Mathf.Clamp(overlayPercentage, 0.0f, 1.0f));
-        }
-
-        /// <summary>
-        /// Gets the delta touch as a percentage of the screen.
-        /// </summary>
-        /// <returns>The delta touch as a percentage of the screen.</returns>
-        private float _GetTouchDelta()
-        {
-            switch (Screen.orientation)
+            else
             {
-                case ScreenOrientation.LandscapeLeft:
-                    return -Input.GetTouch(0).deltaPosition.x / Screen.width;
-                case ScreenOrientation.LandscapeRight:
-                    return Input.GetTouch(0).deltaPosition.x / Screen.width;
-                case ScreenOrientation.Portrait:
-                    return Input.GetTouch(0).deltaPosition.y / Screen.height;
-                case ScreenOrientation.PortraitUpsideDown:
-                    return -Input.GetTouch(0).deltaPosition.y / Screen.height;
-                default:
-                    return 0;
+                croppedWidth = imageWidth;
+                croppedHeight = imageWidth / screenAspectRatio;
             }
-        }
 
-        /// <summary>
-        /// Actually quit the application.
-        /// </summary>
-        private void DoQuit()
-        {
-            Application.Quit();
+            uBorder = (imageWidth - croppedWidth) / imageWidth / 2.0f;
+            vBorder = (imageHeight - croppedHeight) / imageHeight / 2.0f;
         }
 
         /// <summary>
@@ -208,14 +391,88 @@ namespace GoogleARCore.TextureReader
             {
                 _ShowAndroidToastMessage("Camera permission is needed to run this application.");
                 m_IsQuitting = true;
-                Invoke("DoQuit", 0.5f);
+                Invoke("_DoQuit", 0.5f);
             }
             else if (Session.Status == SessionStatus.FatalError)
             {
                 _ShowAndroidToastMessage("ARCore encountered a problem connecting.  Please start the app again.");
                 m_IsQuitting = true;
-                Invoke("DoQuit", 0.5f);
+                Invoke("_DoQuit", 0.5f);
             }
+        }
+
+        /// <summary>
+        /// Show an Android toast message.
+        /// </summary>
+        /// <param name="message">Message string to show in the toast.</param>
+        private void _ShowAndroidToastMessage(string message)
+        {
+            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+            if (unityActivity != null)
+            {
+                AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+                unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+                {
+                    AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity,
+                        message, 0);
+                    toastObject.Call("show");
+                }));
+            }
+        }
+
+        /// <summary>
+        /// Actually quit the application.
+        /// </summary>
+        private void _DoQuit()
+        {
+            Application.Quit();
+        }
+
+        /// <summary>
+        /// Generate string to print the value in CameraIntrinsics.
+        /// </summary>
+        /// <param name="intrinsics">The CameraIntrinsics to generate the string from.</param>
+        /// <param name="intrinsicsType">The string that describe the type of the intrinsics.</param>
+        /// <returns>The generated string.</returns>
+        private string _CameraIntrinsicsToString(CameraIntrinsics intrinsics, string intrinsicsType)
+        {
+            float fovX = 2.0f * Mathf.Atan2(intrinsics.ImageDimensions.x, 2 * intrinsics.FocalLength.x) * Mathf.Rad2Deg;
+            float fovY = 2.0f * Mathf.Atan2(intrinsics.ImageDimensions.y, 2 * intrinsics.FocalLength.y) * Mathf.Rad2Deg;
+
+            return string.Format("Unrotated Camera {4} Intrinsics: {0}  Focal Length: {1}{0}  " +
+                "Principal Point:{2}{0}  Image Dimensions: {3}{0}  Unrotated Field of View: ({5}º, {6}º)",
+                Environment.NewLine, intrinsics.FocalLength.ToString(),
+                intrinsics.PrincipalPoint.ToString(), intrinsics.ImageDimensions.ToString(),
+                intrinsicsType, fovX, fovY);
+        }
+
+        /// <summary>
+        /// Select the desired camera configuration.
+        /// </summary>
+        /// <param name="supportedConfigurations">A list of all supported camera configuration.</param>
+        /// <returns>The desired configuration index.</returns>
+        private int _ChooseCameraConfiguration(List<CameraConfig> supportedConfigurations)
+        {
+            if (!m_Resolutioninitialized)
+            {
+                Vector2 ImageSize = supportedConfigurations[0].ImageSize;
+                LowResConfigToggle.GetComponentInChildren<Text>().text = string.Format(
+                    "Low Resolution ({0} x {1})", ImageSize.x, ImageSize.y);
+                ImageSize = supportedConfigurations[supportedConfigurations.Count - 1].ImageSize;
+                HighResConfigToggle.GetComponentInChildren<Text>().text = string.Format(
+                    "High Resolution ({0} x {1})", ImageSize.x, ImageSize.y);
+
+                m_Resolutioninitialized = true;
+            }
+
+            if (m_UseHighResCPUTexture)
+            {
+                return supportedConfigurations.Count - 1;
+            }
+
+            return 0;
         }
     }
 }

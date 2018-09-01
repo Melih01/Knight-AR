@@ -2,30 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ObjectPoolInfoAsset", menuName = "Knight AR/ObjectPool/Object Pool Info Asset")]
+[CreateAssetMenu(fileName = "ObjectPoolInfoAsset", menuName = "Knight AR/Object Pool/Object Pool Info Asset")]
 public class ObjectPoolInfoAsset : ScriptableObject
 {
     [Space]
     [Reorderable]
-    public List<DamagePopupPrefabInfo> damagePopupPrefabInfos = new List<DamagePopupPrefabInfo>(2);
-
-    [System.Serializable]
-    public class DamagePopupPrefabInfo : ISerializationCallbackReceiver
-    {
-        public string name;
-        public GameObject prefab;
-        public float poolObjectCount = 10;
-
-        public void OnAfterDeserialize()
-        {
-
-        }
-
-        public void OnBeforeSerialize()
-        {
-            name = prefab.name;
-        }
-    }
+    public List<ObjectPoolInfo> objectPoolInfos;
 }
 
 public class ReorderableAttribute : PropertyAttribute

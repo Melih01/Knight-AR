@@ -37,17 +37,17 @@ namespace GoogleARCore
         None = 0,
 
         /// <summary>
-        /// The collision is within the the TrackedPlane's convex bounding polygon.
+        /// The collision is within the DetectedPlane's convex bounding polygon.
         /// </summary>
         PlaneWithinPolygon = 1 << 0,
 
         /// <summary>
-        /// The collision is within the TrackedPlane's bounding box.
+        /// The collision is within the DetectedPlane's bounding box.
         /// </summary>
         PlaneWithinBounds = 1 << 1,
 
         /// <summary>
-        /// The collision is on the TrackedPlane, but not limited to the bounding box or polygon.
+        /// The collision is on the DetectedPlane, but not limited to the bounding box or polygon.
         /// This acts as if the plane extends out to infinity.
         /// </summary>
         PlaneWithinInfinity = 1 << 2,
@@ -62,5 +62,13 @@ namespace GoogleARCore
         /// that has a surface normal estimate (orientation).
         /// </summary>
         FeaturePointWithSurfaceNormal = 1 << 4,
+
+        /// <summary>
+        /// This value is used to collide with all things good for placing objects.
+        ///
+        /// If you pass this into Raycast, you will collide with planes within the bounding
+        /// polygon and feature points with normals.
+        /// </summary>
+        Default = PlaneWithinPolygon | FeaturePointWithSurfaceNormal
     }
 }

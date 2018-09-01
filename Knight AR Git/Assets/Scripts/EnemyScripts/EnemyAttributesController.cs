@@ -4,7 +4,7 @@ public class EnemyAttributesController : CustomMonoBehaviour
 {
     [Space]
     public EnemyAttributesInfoAsset attributesInfoAsset;
-    public EnemyController enemyController { get; set; }
+    public EnemyController EnemyController { get; set; }
 
     public float speed { get; set; }
     public float stoppingDistance { get; set; }
@@ -36,7 +36,7 @@ public class EnemyAttributesController : CustomMonoBehaviour
         armor = attributesInfoAsset.armor;
         damageElement = attributesInfoAsset.damageElement;
 
-        enemyController = GetComponent<EnemyController>();
+        EnemyController = GetComponent<EnemyController>();
     }
 
     protected virtual void Start()
@@ -45,8 +45,8 @@ public class EnemyAttributesController : CustomMonoBehaviour
         speed = SetAttributeToGamePlayMode(attributesInfoAsset.moveSpeed);
         stoppingDistance = SetAttributeToGamePlayMode(attributesInfoAsset.stoppingDistance, extraARFactor);
 
-        enemyController.agent.speed = speed;
-        enemyController.agent.stoppingDistance = stoppingDistance;
+        EnemyController.MovementController.Agent.speed = speed;
+        EnemyController.MovementController.Agent.stoppingDistance = stoppingDistance;
     }
 
     public virtual void ResetAllAttributes()
@@ -62,8 +62,8 @@ public class EnemyAttributesController : CustomMonoBehaviour
         speed = SetAttributeToGamePlayMode(attributesInfoAsset.moveSpeed);
         stoppingDistance = SetAttributeToGamePlayMode(attributesInfoAsset.stoppingDistance, extraARFactor);
 
-        enemyController.agent.speed = speed;
-        enemyController.agent.stoppingDistance = stoppingDistance;
+        EnemyController.MovementController.Agent.speed = speed;
+        EnemyController.MovementController.Agent.stoppingDistance = stoppingDistance;
 
         GameManager.instance.screenUIController.enemyUIController.ResetAllAttributes();
     }

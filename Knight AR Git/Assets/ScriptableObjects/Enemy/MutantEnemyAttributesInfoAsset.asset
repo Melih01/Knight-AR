@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 100
   moveSpeed: 1
-  regularDamage: 100
+  regularDamage: 50
   criticalChance: 0.3
   armorPiece: 10
   armor: 20

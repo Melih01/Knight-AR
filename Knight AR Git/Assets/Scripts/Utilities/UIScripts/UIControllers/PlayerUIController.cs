@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UniRx;
 using System.Collections.Generic;
 
 public class PlayerUIController : CustomMonoBehaviour

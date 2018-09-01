@@ -18,7 +18,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace GoogleARCore.HelloAR
+namespace GoogleARCore.Examples.HelloAR
 {
     using System.Collections.Generic;
     using GoogleARCore;
@@ -65,7 +65,7 @@ namespace GoogleARCore.HelloAR
         /// A list to hold all planes ARCore is tracking in the current frame. This object is used across
         /// the application to avoid per-frame allocations.
         /// </summary>
-        private List<TrackedPlane> m_AllPlanes = new List<TrackedPlane>();
+        private List<DetectedPlane> m_AllPlanes = new List<DetectedPlane>();
 
         /// <summary>
         /// True if the app is in the process of quitting due to an ARCore connection error, otherwise false.
@@ -99,20 +99,20 @@ namespace GoogleARCore.HelloAR
 
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
-            // Iterate over planes found in this frame and instantiate corresponding GameObjects to visualize them.
-            Session.GetTrackables<TrackedPlane>(m_NewPlanes, TrackableQueryFilter.New);
-            for (int i = 0; i < m_NewPlanes.Count; i++)
-            {
-                // Instantiate a plane visualization prefab and set it to track the new plane. The transform is set to
-                // the origin with an identity rotation since the mesh for our prefab is updated in Unity World
-                // coordinates.
-                GameObject planeObject = Instantiate(TrackedPlanePrefab, Vector3.zero, Quaternion.identity,
-                    transform);
-                planeObject.GetComponent<TrackedPlaneVisualizer>().Initialize(m_NewPlanes[i]);
-            }
+            ////Iterate over planes found in this frame and instantiate corresponding GameObjects to visualize them.
+            //Session.GetTrackables<TrackedPlane>(m_NewPlanes, TrackableQueryFilter.New);
+            //for (int i = 0; i < m_NewPlanes.Count; i++)
+            //{
+            //    Instantiate a plane visualization prefab and set it to track the new plane.The transform is set to
+            //     the origin with an identity rotation since the mesh for our prefab is updated in Unity World
+            //     coordinates.
+            //    GameObject planeObject = Instantiate(TrackedPlanePrefab, Vector3.zero, Quaternion.identity,
+            //        transform);
+            //    planeObject.GetComponent<TrackedPlaneVisualizer>().Initialize(m_NewPlanes[i]);
+            //}
 
-            // Disable the snackbar UI when no planes are valid.
-            Session.GetTrackables<TrackedPlane>(m_AllPlanes);
+            // Hide snackbar when currently tracking at least one plane.
+            Session.GetTrackables<DetectedPlane>(m_AllPlanes);
             bool showSearchingUI = true;
             for (int i = 0; i < m_AllPlanes.Count; i++)
             {

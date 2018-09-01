@@ -1,4 +1,4 @@
-﻿using GoogleARCore.HelloAR;
+﻿using GoogleARCore.Examples.HelloAR;
 using UnityEngine;
 
 public enum GamePlayMode
@@ -42,7 +42,6 @@ public class GameManager : CustomMonoBehaviour
         if (!screenUIController) screenUIController = FindObjectOfType<ScreenUIController>();
         if (!objectPoolManager) objectPoolManager = FindObjectOfType<ObjectPoolManager>();
 
-        //gamePlayMode = FindObjectOfType<GameManagerAR>() == null ? GamePlayMode.Normal : GamePlayMode.AR;
         gamePlayMode = FindObjectOfType<GameController>() == null ? GamePlayMode.Normal : GamePlayMode.AR;
     }
 

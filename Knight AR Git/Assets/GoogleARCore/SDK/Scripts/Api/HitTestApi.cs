@@ -22,14 +22,18 @@ namespace GoogleARCoreInternal
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.InteropServices;
     using GoogleARCore;
     using UnityEngine;
 
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented",
-    Justification = "Internal")]
-    public class HitTestApi
+#if UNITY_IOS && !UNITY_EDITOR
+    using AndroidImport = GoogleARCoreInternal.DllImportNoop;
+    using IOSImport = System.Runtime.InteropServices.DllImportAttribute;
+#else
+    using AndroidImport = System.Runtime.InteropServices.DllImportAttribute;
+    using IOSImport = GoogleARCoreInternal.DllImportNoop;
+#endif
+
+    internal class HitTestApi
     {
         private NativeSession m_NativeSession;
 
@@ -39,14 +43,39 @@ namespace GoogleARCoreInternal
         }
 
         public bool Raycast(IntPtr frameHandle, float x, float y, TrackableHitFlags filter,
-            List<TrackableHit> outHitList, bool isOnlyQueryingNearestHit)
+            List<TrackableHit> outHitList)
         {
             outHitList.Clear();
 
             IntPtr hitResultListHandle = IntPtr.Zero;
             ExternApi.ArHitResultList_create(m_NativeSession.SessionHandle, ref hitResultListHandle);
             ExternApi.ArFrame_hitTest(m_NativeSession.SessionHandle, frameHandle, x, y, hitResultListHandle);
+            FilterTrackableHits(hitResultListHandle, Mathf.Infinity, filter, outHitList);
+            ExternApi.ArHitResultList_destroy(hitResultListHandle);
+            return outHitList.Count != 0;
+        }
 
+        public bool Raycast(IntPtr frameHandle, Vector3 origin, Vector3 direction, float maxDistance,
+            TrackableHitFlags filter, List<TrackableHit> outHitList)
+        {
+            outHitList.Clear();
+
+            IntPtr hitResultListHandle = IntPtr.Zero;
+            ExternApi.ArHitResultList_create(m_NativeSession.SessionHandle, ref hitResultListHandle);
+
+            // Invert z to match ARCore coordinate system.
+            origin.z = -origin.z;
+            direction.z = -direction.z;
+            ExternApi.ArFrame_hitTestRay(m_NativeSession.SessionHandle, frameHandle, ref origin, ref direction,
+                hitResultListHandle);
+            FilterTrackableHits(hitResultListHandle, maxDistance, filter, outHitList);
+            ExternApi.ArHitResultList_destroy(hitResultListHandle);
+            return outHitList.Count != 0;
+        }
+
+        private void FilterTrackableHits(IntPtr hitResultListHandle, float maxDistance, TrackableHitFlags filter,
+            List<TrackableHit> outHitList)
+        {
             int hitListSize = 0;
             ExternApi.ArHitResultList_getSize(m_NativeSession.SessionHandle, hitResultListHandle, ref hitListSize);
 
@@ -55,15 +84,12 @@ namespace GoogleARCoreInternal
                 TrackableHit trackableHit;
                 if (HitResultListGetItemAt(hitResultListHandle, i, out trackableHit))
                 {
-                    if ((filter & trackableHit.Flags) != TrackableHitFlags.None)
+                    if ((filter & trackableHit.Flags) != TrackableHitFlags.None && trackableHit.Distance <= maxDistance)
                     {
                         outHitList.Add(trackableHit);
                     }
                 }
             }
-
-            ExternApi.ArHitResultList_destroy(hitResultListHandle);
-            return outHitList.Count != 0;
         }
 
         private bool HitResultListGetItemAt(IntPtr hitResultListHandle, int index, out TrackableHit outTrackableHit)
@@ -103,7 +129,7 @@ namespace GoogleARCoreInternal
                 m_NativeSession.PoseApi.Destroy(poseHandle);
                 return false;
             }
-            else if (trackable is TrackedPlane)
+            else if (trackable is DetectedPlane)
             {
                 if (m_NativeSession.PlaneApi.IsPoseInPolygon(trackableHandle, poseHandle))
                 {
@@ -117,11 +143,11 @@ namespace GoogleARCoreInternal
 
                 flag |= TrackableHitFlags.PlaneWithinInfinity;
             }
-            else if (trackable is TrackedPoint)
+            else if (trackable is FeaturePoint)
             {
-                var point = trackable as TrackedPoint;
+                var point = trackable as FeaturePoint;
                 flag |= TrackableHitFlags.FeaturePoint;
-                if (point.OrientationMode == TrackedPointOrientationMode.SurfaceNormal)
+                if (point.OrientationMode == FeaturePointOrientationMode.SurfaceNormal)
                 {
                     flag |= TrackableHitFlags.FeaturePointWithSurfaceNormal;
                 }
@@ -139,42 +165,45 @@ namespace GoogleARCoreInternal
 
         private struct ExternApi
         {
-            // Hit test function.
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+#pragma warning disable 626
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArFrame_hitTest(IntPtr session,
                 IntPtr frame, float pixel_x, float pixel_y, IntPtr hit_result_list);
 
-            // Hit list functions.
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
+            public static extern void ArFrame_hitTestRay(IntPtr session,
+                IntPtr frame, ref Vector3 origin, ref Vector3 direction, IntPtr hit_result_list);
+
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResultList_create(IntPtr session, ref IntPtr out_hit_result_list);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResultList_destroy(IntPtr hit_result_list);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResultList_getSize(IntPtr session, IntPtr hit_result_list, ref int out_size);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResultList_getItem(IntPtr session, IntPtr hit_result_list,
                 int index, IntPtr out_hit_result);
 
-            // Hit Result funcitons.
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResult_create(IntPtr session, ref IntPtr out_hit_result);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResult_destroy(IntPtr hit_result);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResult_getDistance(IntPtr session, IntPtr hit_result,
                 ref float out_distance);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResult_getHitPose(IntPtr session, IntPtr hit_result, IntPtr out_pose);
 
-            [DllImport(ApiConstants.ARCoreNativeApi)]
+            [AndroidImport(ApiConstants.ARCoreNativeApi)]
             public static extern void ArHitResult_acquireTrackable(IntPtr session, IntPtr hit_result,
                 ref IntPtr out_trackable);
+#pragma warning restore 626
         }
     }
 }

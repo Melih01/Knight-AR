@@ -66,9 +66,9 @@ GameObject:
   - component: {fileID: 4887400458174992}
   - component: {fileID: 95971621644237040}
   - component: {fileID: 114167131621734426}
+  - component: {fileID: 114366073045369828}
   - component: {fileID: 114847879064693512}
   - component: {fileID: 114172391790715296}
-  - component: {fileID: 143555261000891234}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -296,7 +296,7 @@ GameObject:
   - component: {fileID: 4898226245344836}
   - component: {fileID: 136855405497236186}
   - component: {fileID: 54423642220638440}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: ContactCollider
   m_TagString: PlayerContact
   m_Icon: {fileID: 0}
@@ -694,6 +694,21 @@ GameObject:
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1616330764204134
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4983701099144194}
+  m_Layer: 10
+  m_Name: DamagePopupSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 3306451490063965843, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -2126,6 +2141,7 @@ Transform:
   m_Children:
   - {fileID: 4977435537869422}
   - {fileID: 4898226245344836}
+  - {fileID: 4983701099144194}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2201,6 +2217,19 @@ Transform:
   - {fileID: 4863080056967872}
   m_Father: {fileID: 4540002923557478}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4983701099144194
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1616330764204134}
+  m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
+  m_LocalPosition: {x: 0, y: 1.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4887400458174992}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4988912571866048
 Transform:
@@ -2316,6 +2345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactCollider: {fileID: 136855405497236186}
+  damagePopupSpawnPoint: {fileID: 4983701099144194}
 --- !u!114 &114172391790715296
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2328,6 +2358,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   swordContactCollider: {fileID: 136099611534767786}
+--- !u!114 &114366073045369828
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1022239357544198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1244017b3103a4499941a138071c75a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114488955086988884
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2364,6 +2405,7 @@ MonoBehaviour:
   attributesInfoAsset: {fileID: 11400000, guid: dc1897e0cb1e7be4b90412dc9795f06c,
     type: 2}
   speed: 0
+  health: 0
 --- !u!136 &136099611534767786
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -2589,20 +2631,3 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.014344037, y: -0.04310393, z: -0.05314344}
     m_Extent: {x: 0.22419421, y: 0.06168222, z: 0.3378993}
   m_DirtyAABB: 0
---- !u!143 &143555261000891234
-CharacterController:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1022239357544198}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 1.5
-  m_Radius: 0.3
-  m_SlopeLimit: 45
-  m_StepOffset: 0
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.8, z: 0}

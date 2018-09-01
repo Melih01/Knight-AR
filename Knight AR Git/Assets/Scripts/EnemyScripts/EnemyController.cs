@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.AI;
 
 public abstract class EnemyController : CustomMonoBehaviour, IDamageable
 {
-    public NavMeshAgent agent { get; private set; }
     public EnemyAttributesController AttributesController { get; set; }
-    public MutantEnemyAnimationController AnimationController { get; private set; }
+    public EnemyAnimationController AnimationController { get; protected set; }
+    public EnemyMovementController MovementController { get; protected set; }
+    public PlayerController Target { get; private set; }
 
     public event System.Action<EnemyController> EnemyGetDamaged;
     public event System.Action<EnemyController> EnemyDied;
@@ -17,15 +17,13 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
     [SerializeField]
     Transform damagePopupSpawnPoint;
 
-    protected PlayerController target;
     protected bool isPlayerDead;
 
     protected virtual void Awake()
     {
-        AnimationController = GetComponent<MutantEnemyAnimationController>();
+        AnimationController = GetComponent<EnemyAnimationController>();
         AttributesController = GetComponent<EnemyAttributesController>();
-        agent = GetComponent<NavMeshAgent>();
-        agent.updateRotation = false;
+        MovementController = GetComponent<EnemyMovementController>();
     }
 
     protected virtual void Start()
@@ -40,54 +38,12 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
         },
         action: () =>
         {
-            target = GameManager.instance.playerController;
+            Target = GameManager.instance.playerController;
         }));
     }
 
     protected virtual void Update()
     {
-        MoveToTarget();
-    }
-
-    protected virtual void MoveToTarget()
-    {
-        if (target && target.AttributesController.health > 0 && AttributesController.health > 0)
-        {
-            if (!AnimationController.IsAttack && AttributesController.health > 0)
-                transform.LookAt(target.transform.position);
-
-            if (agent.isOnNavMesh)
-            {
-                float distance = Vector3.Distance(transform.position, target.transform.position);
-                agent.SetDestination(target.transform.position);
-
-                if (distance <= agent.stoppingDistance && !AnimationController.IsAttack)
-                {
-                    StopAndAttack();
-                }
-                else if (distance > agent.stoppingDistance && !AnimationController.IsAttack)
-                {
-                    Move();
-                }
-            }
-        }
-    }
-
-    protected virtual void StopAndAttack()
-    {
-        agent.velocity = Vector3.zero;
-        agent.isStopped = true;
-        AnimationController.SetAttack();
-    }
-
-    protected virtual void Move()
-    {
-        agent.isStopped = false;
-        AnimationController.SetSpeed(agent.velocity.magnitude);
-
-        var speedWithAnim = (AnimationController.Anim.deltaPosition / Time.deltaTime).magnitude - 1;
-        if (speedWithAnim > 0)
-            agent.speed = speedWithAnim;
     }
 
     protected virtual void Die()
@@ -97,11 +53,6 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
         contactCollider.enabled = false;
 
         GameManager.instance.screenUIController.gameResultUIController.ShowGameResultUI(true);
-
-        //StartCoroutine(WaitForSeconds(3, () =>
-        //{
-        //    gameObject.SetActive(false);
-        //}));
     }
 
     public virtual void Revive()
@@ -120,7 +71,7 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
     public virtual void ApplyDamage(float damage, DamageElement damageElement = DamageElement.Physical)
     {
         if (damage > 0)
-            GameManager.instance.objectPoolManager.Spawn(ObjectPool.DamagePopup, damagePopupSpawnPoint, damage); 
+            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.DamagePopup, damagePopupSpawnPoint, damage); 
 
         if (AttributesController.health > 0)
         {

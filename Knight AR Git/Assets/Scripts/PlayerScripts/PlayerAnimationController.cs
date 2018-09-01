@@ -57,36 +57,36 @@ public class PlayerAnimationController : CustomMonoBehaviour
     public void SetRevive()
     {
         Anim.SetTrigger("Revive");
-        playerController.IsCanControl = true;
+        playerController.PlayerMovementController.IsCanControl = true;
     }
 
     public void SetDie()
     {
         SetDisableSwordCollider();
         Anim.SetTrigger("Die");
-        playerController.IsCanControl = false;
+        playerController.PlayerMovementController.IsCanControl = false;
     }
 
     public void AttackStateStarted() //Animation function
     {
         IsAttack = true;
-        playerController.IsCanControl = false;
+        playerController.PlayerMovementController.IsCanControl = false;
     }
 
     public void AttackStateFinished() //Animation function
     {
         IsAttack = false;
-        playerController.IsCanControl = true;
+        playerController.PlayerMovementController.IsCanControl = true;
     }
 
     public void HitAnimationStateStarted() //Animation function
     {
-        playerController.IsCanControl = false;
+        playerController.PlayerMovementController.IsCanControl = false;
     }
 
     public void HitAnimationStateFinished() //Animation function
     {
-        playerController.IsCanControl = true;
+        playerController.PlayerMovementController.IsCanControl = true;
     }
 
     public void SetEnableSwordCollider() //Animation function

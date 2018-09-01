@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ObjectPool
+public enum ObjectPoolType
 {
     DamagePopup = 0
 }
@@ -10,21 +10,35 @@ public enum ObjectPool
 public class ObjectPoolManager : CustomMonoBehaviour
 {
     [Space]
+    public Transform objectPoolContainer;
+    [Space]
     [SerializeField]
     ObjectPoolInfoAsset objectPoolInfoAsset;
-    [Space]
+
+    [Header("Just For Debug!")]
     public List<GameObject> damagePopupObjectPoolList;
 
     void Awake()
     {
-        objectPoolInfoAsset.damagePopupPrefabInfos.DoForAll((damagePopupController) =>
+        objectPoolInfoAsset.objectPoolInfos.DoForAll((objectPoolInfo) =>
         {
-            for (int i = 0; i < damagePopupController.poolObjectCount; i++)
+            /// Objects Spawn in Object Pool Container.
+            switch (objectPoolInfo.objectPoolType)
             {
-                damagePopupObjectPoolList.Add(Spawn(damagePopupController.prefab, transform));
-                damagePopupObjectPoolList[i].SetActive(false);
+                case ObjectPoolType.DamagePopup:
+                    FillObjectPoolList(objectPoolInfo, ref damagePopupObjectPoolList, objectPoolInfo.count);
+                    break;
             }
         });
+    }
+
+    void FillObjectPoolList(ObjectPoolInfo objectPoolInfo, ref List<GameObject> objectPoolList, int count)
+    {
+        for (int i = 0; i < objectPoolInfo.count; i++)
+        {
+            objectPoolList.Add(Spawn(objectPoolInfo.prefab, objectPoolContainer));
+            objectPoolList[i].SetActive(false);
+        }
     }
 
     public GameObject Spawn(GameObject prefab, Transform parent)
@@ -32,12 +46,12 @@ public class ObjectPoolManager : CustomMonoBehaviour
         return Instantiate(prefab, parent);
     }
 
-    public void Spawn(ObjectPool objectPool, Transform parent,float damage = 0)
+    public void Spawn(ObjectPoolType objectPool, Transform parent, float damage = 0)
     {
         switch (objectPool)
         {
-            case ObjectPool.DamagePopup:
-                var obj = damagePopupObjectPoolList.ObjectPoolSpawn(parent,active: false);
+            case ObjectPoolType.DamagePopup:
+                var obj = damagePopupObjectPoolList.ObjectPoolSpawn(parent, active: false);
                 var damagePopupController = obj.GetComponent<DamagePopupController>();
                 damagePopupController.damage = damage;
                 obj.SetActive(true);
@@ -48,8 +62,30 @@ public class ObjectPoolManager : CustomMonoBehaviour
     }
 }
 
+[System.Serializable]
+public class ObjectPoolInfo : ISerializationCallbackReceiver
+{
+    [HideInInspector]
+    public string name;
+    public ObjectPoolType objectPoolType;
+    public GameObject prefab;
+    public int count;
+
+    public void OnAfterDeserialize()
+    {
+    }
+
+    public void OnBeforeSerialize()
+    {
+        name = prefab.name;
+        objectPoolType = ObjectPoolType.DamagePopup;
+    }
+}
+
 public static class ObjectPoolManagerExtensions
 {
+    static CustomMonoBehaviour customMonoBehaviour;
+
     public static GameObject ObjectPoolSpawn(this IList<GameObject> list, Transform parent, bool active = true)
     {
         var obj = list[0];
@@ -63,7 +99,11 @@ public static class ObjectPoolManagerExtensions
 
     public static void ObjectPoolReturn(this IList<GameObject> list, GameObject prefab)
     {
-        prefab.transform.SetParent(GameManager.instance.objectPoolManager.transform);
-        list.Add(prefab);
+        customMonoBehaviour = GameManager.instance.GetComponent<CustomMonoBehaviour>();
+        customMonoBehaviour.StartCoroutine(customMonoBehaviour.WaitForSecondsCoroutine(0.1f, action: () =>
+            {
+                prefab.transform.SetParent(GameManager.instance.objectPoolManager.objectPoolContainer);
+                list.Add(prefab);
+            }));
     }
 }

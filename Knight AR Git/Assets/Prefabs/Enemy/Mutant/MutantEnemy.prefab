@@ -176,6 +176,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1282700166731816
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4588353040253140}
+  m_Layer: 10
+  m_Name: DamagePopupSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 3306451490063965843, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1284396001419354
 GameObject:
   m_ObjectHideFlags: 1
@@ -444,6 +459,7 @@ GameObject:
   - component: {fileID: 4830497650655808}
   - component: {fileID: 95016310116590600}
   - component: {fileID: 114202904677808084}
+  - component: {fileID: 114249399545278082}
   - component: {fileID: 114595646253763826}
   - component: {fileID: 114538094640845712}
   - component: {fileID: 195837862534952582}
@@ -1152,6 +1168,19 @@ Transform:
   m_Father: {fileID: 4275362336020642}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4588353040253140
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1282700166731816}
+  m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
+  m_LocalPosition: {x: 0, y: 2.3, z: 0.26999998}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4830497650655808}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4592106509416646
 Transform:
   m_ObjectHideFlags: 1
@@ -1359,6 +1388,7 @@ Transform:
   m_Children:
   - {fileID: 4203238075065552}
   - {fileID: 4884801317283786}
+  - {fileID: 4588353040253140}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -1473,7 +1503,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 59e15c53a7e463141ab68a6c9c83ddfb, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -1491,6 +1521,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactCollider: {fileID: 136313642975785968}
+  damagePopupSpawnPoint: {fileID: 4588353040253140}
+--- !u!114 &114249399545278082
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1534028648492722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afad6ef548252a94a80c76f838c57e7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114425266011098526
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1513,6 +1555,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a16d3b8007f3154d9d91dd107d0c802, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mutantShapeHandContactCollider: {fileID: 136972930086151542}
   mutantShapeHandContactCollider: {fileID: 136972930086151542}
 --- !u!114 &114595646253763826
 MonoBehaviour:
