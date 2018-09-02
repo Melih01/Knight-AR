@@ -4,7 +4,8 @@ using UnityEngine;
 
 public enum ObjectPoolType
 {
-    DamagePopup = 0
+    DamagePopup = 0,
+    BloodSprayEffect = 10
 }
 
 public class ObjectPoolManager : CustomMonoBehaviour
@@ -17,6 +18,7 @@ public class ObjectPoolManager : CustomMonoBehaviour
 
     [Header("Just For Debug!")]
     public List<GameObject> damagePopupObjectPoolList;
+    public List<GameObject> bloodSprayEffectObjectPoolList;
 
     void Awake()
     {
@@ -27,6 +29,9 @@ public class ObjectPoolManager : CustomMonoBehaviour
             {
                 case ObjectPoolType.DamagePopup:
                     FillObjectPoolList(objectPoolInfo, ref damagePopupObjectPoolList, objectPoolInfo.count);
+                    break;
+                case ObjectPoolType.BloodSprayEffect:
+                    FillObjectPoolList(objectPoolInfo, ref bloodSprayEffectObjectPoolList, objectPoolInfo.count);
                     break;
             }
         });
@@ -41,22 +46,39 @@ public class ObjectPoolManager : CustomMonoBehaviour
         }
     }
 
-    public GameObject Spawn(GameObject prefab, Transform parent)
+    private GameObject Spawn(GameObject prefab, Transform parent)
     {
         return Instantiate(prefab, parent);
     }
 
-    public void Spawn(ObjectPoolType objectPool, Transform parent, float damage = 0)
+    public void Spawn(ObjectPoolType objectPoolType, Transform parent, Vector3 localPosition, float damage = 0)
     {
-        switch (objectPool)
+        SpawnBase(objectPoolType, parent, localPosition, damage);
+    }
+
+    public void Spawn(ObjectPoolType objectPoolType, Transform parent, float damage = 0)
+    {
+        SpawnBase(objectPoolType, parent, Vector3.zero, damage);
+    }
+
+    public void Spawn(ObjectPoolType objectPoolType, Vector3 position, float damage = 0)
+    {
+        SpawnBase(objectPoolType, null, position, damage);
+    }
+
+    private void SpawnBase(ObjectPoolType objectPoolType, Transform parent, Vector3 position, float damage = 0)
+    {
+        switch (objectPoolType)
         {
             case ObjectPoolType.DamagePopup:
                 var obj = damagePopupObjectPoolList.ObjectPoolSpawn(parent, active: false);
                 var damagePopupController = obj.GetComponent<DamagePopupController>();
                 damagePopupController.damage = damage;
+                obj.transform.localPosition = Vector3.zero;
                 obj.SetActive(true);
                 break;
-            default:
+            case ObjectPoolType.BloodSprayEffect:
+                bloodSprayEffectObjectPoolList.ObjectPoolSpawn(parent).GetComponent<ParticleSystem>().Play();
                 break;
         }
     }
@@ -78,7 +100,6 @@ public class ObjectPoolInfo : ISerializationCallbackReceiver
     public void OnBeforeSerialize()
     {
         name = prefab.name;
-        objectPoolType = ObjectPoolType.DamagePopup;
     }
 }
 
@@ -92,6 +113,27 @@ public static class ObjectPoolManagerExtensions
         list.RemoveAt(0);
         obj.transform.SetParent(parent);
         obj.transform.localPosition = Vector3.zero;
+        obj.SetActive(active);
+
+        return obj;
+    }
+
+    public static GameObject ObjectPoolSpawn(this IList<GameObject> list, Vector3 position, bool active = true)
+    {
+        var obj = list[0];
+        list.RemoveAt(0);
+        obj.transform.position = position;
+        obj.SetActive(active);
+
+        return obj;
+    }
+
+    public static GameObject ObjectPoolSpawn(this IList<GameObject> list, Transform parent,Vector3 localPosition, bool active = true)
+    {
+        var obj = list[0];
+        list.RemoveAt(0);
+        obj.transform.SetParent(parent);
+        obj.transform.localPosition = localPosition;
         obj.SetActive(active);
 
         return obj;

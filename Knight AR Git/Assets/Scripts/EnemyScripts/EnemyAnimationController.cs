@@ -14,8 +14,8 @@ public class EnemyAnimationController : CustomMonoBehaviour
 
     public virtual void SetAttack()
     {
-        Anim.SetTrigger("Attack");
         AttackStateStarted();
+        Anim.SetTrigger("Attack");
     }
 
     public virtual void SetSpeed(float speed)

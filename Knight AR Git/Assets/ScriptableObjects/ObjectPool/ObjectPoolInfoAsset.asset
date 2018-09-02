@@ -16,3 +16,7 @@ MonoBehaviour:
     objectPoolType: 0
     prefab: {fileID: 1458160218875650, guid: 0fefc0ed3fa013b4fbfe27ba022b3acf, type: 2}
     count: 10
+  - name: BloodSprayEffect
+    objectPoolType: 10
+    prefab: {fileID: 1000012909287652, guid: abb9f519b142e304d9c45b56afa768bc, type: 2}
+    count: 10

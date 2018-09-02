@@ -5,7 +5,6 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
     public EnemyAttributesController AttributesController { get; set; }
     public EnemyAnimationController AnimationController { get; protected set; }
     public EnemyMovementController MovementController { get; protected set; }
-    public PlayerController Target { get; private set; }
 
     public event System.Action<EnemyController> EnemyGetDamaged;
     public event System.Action<EnemyController> EnemyDied;
@@ -15,7 +14,10 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
     Collider contactCollider;
     [Space]
     [SerializeField]
-    Transform damagePopupSpawnPoint;
+    Transform damagePopupSpawnTransform;
+    [Space]
+    [SerializeField]
+    Transform bloodEffectSpawnTransform;
 
     protected bool isPlayerDead;
 
@@ -29,17 +31,6 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
     protected virtual void Start()
     {
         GameManager.instance.enemyController = this;
-
-        //Check Until PlayerController is not Null
-        StartCoroutine(WaitUntilConditionHappenCoroutine(ConditionFunc: () =>
-        {
-            bool condition = GameManager.instance.playerController != null;
-            return condition;
-        },
-        action: () =>
-        {
-            Target = GameManager.instance.playerController;
-        }));
     }
 
     protected virtual void Update()
@@ -71,12 +62,15 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
     public virtual void ApplyDamage(float damage, DamageElement damageElement = DamageElement.Physical)
     {
         if (damage > 0)
-            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.DamagePopup, damagePopupSpawnPoint, damage); 
+            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.DamagePopup, damagePopupSpawnTransform, damage); 
 
         if (AttributesController.health > 0)
         {
             AttributesController.health -= damage;
             EnemyGetDamaged?.Invoke(this);
+
+            ///Blood Effect Spawn.
+            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.BloodSprayEffect, bloodEffectSpawnTransform);
         }
 
         if (AttributesController.health <= 0)

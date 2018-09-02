@@ -15,7 +15,10 @@ public class PlayerController : CustomMonoBehaviour, IDamageable
     public Collider contactCollider;
     [Space]
     [SerializeField]
-    Transform damagePopupSpawnPoint;
+    Transform damagePopupSpawnTransform;
+    [Space]
+    [SerializeField]
+    Transform bloodEffectSpawnTransform;
 
     void Awake()
     {
@@ -58,13 +61,15 @@ public class PlayerController : CustomMonoBehaviour, IDamageable
     {
         var TotalDamage = damage - AttributesController.armor;
 
-        //if (damage > 0)
-        GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.DamagePopup, damagePopupSpawnPoint, TotalDamage);
+        GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.DamagePopup, damagePopupSpawnTransform, TotalDamage);
 
         if (AttributesController.health > 0)
         {
             AttributesController.health -= TotalDamage;
-            PlayerGetDamaged?.Invoke(this);
+            PlayerGetDamaged?.Invoke(this); /// Used For PlayerUI.
+
+            ///Blood Effect Spawn.
+            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.BloodSprayEffect, bloodEffectSpawnTransform);
         }
 
         if (AttributesController.health <= 0)

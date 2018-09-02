@@ -7,36 +7,51 @@ public abstract class EnemyMovementController : CustomMonoBehaviour
 {
     public NavMeshAgent Agent { get; set; }
     public EnemyController EnemyController { get; private set; }
+    public PlayerController Target { get; private set; }
 
     protected virtual void Awake()
     {
         EnemyController = GetComponent<EnemyController>();
         Agent = GetComponent<NavMeshAgent>();
         Agent.updateRotation = false;
+
+        //Check Until PlayerController is not Null
+        StartCoroutine(WaitUntilConditionHappenCoroutine(ConditionFunc: () =>
+        {
+            bool condition = GameManager.instance.playerController != null;
+            return condition;
+        },
+        action: () =>
+        {
+            Target = GameManager.instance.playerController;
+        }));
     }
 
     protected virtual void Update()
     {
-        MoveToTarget();
+        if (Target != null && Target.AttributesController.health > 0)
+            MoveToTarget();
+        else
+            EnemyController.AnimationController.SetSpeed(0);
     }
 
     protected virtual void MoveToTarget()
     {
-        if (EnemyController.Target && EnemyController.Target.AttributesController.health > 0 && EnemyController.AttributesController.health > 0)
+        if (Target && Target.AttributesController.health > 0 && EnemyController.AttributesController.health > 0)
         {
             if (!EnemyController.AnimationController.IsAttack && EnemyController.AttributesController.health > 0)
-                transform.LookAt(EnemyController.Target.transform.position);
+                transform.LookAt(Target.transform.position);
 
-            if (Agent.isOnNavMesh)
+            if (Agent.isOnNavMesh && !EnemyController.AnimationController.IsAttack)
             {
-                float distance = Vector3.Distance(transform.position, EnemyController.Target.transform.position);
-                Agent.SetDestination(EnemyController.Target.transform.position);
+                float distance = Vector3.Distance(transform.position, Target.transform.position);
+                Agent.SetDestination(Target.transform.position);
 
-                if (distance <= Agent.stoppingDistance && !EnemyController.AnimationController.IsAttack)
+                if (distance <= Agent.stoppingDistance)
                 {
                     StopAndAttack();
                 }
-                else if (distance > Agent.stoppingDistance && !EnemyController.AnimationController.IsAttack)
+                else if (distance > Agent.stoppingDistance)
                 {
                     Move();
                 }
@@ -48,6 +63,7 @@ public abstract class EnemyMovementController : CustomMonoBehaviour
     {
         Agent.velocity = Vector3.zero;
         Agent.isStopped = true;
+        EnemyController.AnimationController.SetSpeed(0);
         EnemyController.AnimationController.SetAttack();
     }
 

@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class MutantEnemyContactController : CustomMonoBehaviour
 {
+    [Space]
+    [SerializeField]
+    LayerMask contactLayerMask;
+
     public EnemyController MutantEnemyController { get; private set; }
 
     void Awake()
@@ -15,7 +19,7 @@ public class MutantEnemyContactController : CustomMonoBehaviour
     {
         if (other.CompareTag(TagHelper.PLAYER_CONTACT))
         {
-            other.GetComponentInParent<PlayerController>().ApplyDamage(MutantEnemyController.AttributesController.TotalDamage,MutantEnemyController.AttributesController.damageElement);
+            other.GetComponentInParent<PlayerController>().ApplyDamage(MutantEnemyController.AttributesController.TotalDamage, MutantEnemyController.AttributesController.damageElement);
         }
     }
 }

@@ -10,8 +10,8 @@ public class MutantEnemyAnimationController : EnemyAnimationController
 
     public override void SetAttack()
     {
-        Anim.SetTrigger("Attack");
         AttackStateStarted();
+        Anim.SetTrigger("Attack");
     }
 
     public override void SetSpeed(float speed)
@@ -43,8 +43,8 @@ public class MutantEnemyAnimationController : EnemyAnimationController
 
     public override void AttackStateFinished() //Animation function
     {
-        IsAttack = false;
         SetDisableMutantShapeHandCollider();
+        IsAttack = false;
     }
 
     public void SetEnableMutantShapeHandCollider() //Animation function

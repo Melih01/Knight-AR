@@ -82,6 +82,7 @@
     <Compile Include="Assets\Standard Assets\CNControls\Scripts\Controllers\SimpleJoystick.cs" />
     <Compile Include="Assets\Standard Assets\CNControls\Scripts\Controllers\Touchpad.cs" />
     <Compile Include="Assets\Standard Assets\CNControls\Scripts\EmptyGraphic.cs" />
+    <None Include="Assets\Plugins\UniRx\ReadMe.txt" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/melih/Desktop/KnightARGit/Knight AR Git/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
@@ -646,9 +647,21 @@
       <Project>{6DF79AAD-ED42-6A28-AC37-7A792DD3C683}</Project>
       <Name>UniRx</Name>
     </ProjectReference>
+    <ProjectReference Include="NavMeshComponentsEditor.csproj">
+      <Project>{D8BB0318-8FB3-441B-6F6C-7DA304855C07}</Project>
+      <Name>NavMeshComponentsEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="NavMeshComponents.csproj">
+      <Project>{4184CD5E-3323-D53E-FC41-84B514652368}</Project>
+      <Name>NavMeshComponents</Name>
+    </ProjectReference>
     <ProjectReference Include="UniRx.Async.csproj">
       <Project>{02BA9D9D-C3F3-88FF-DF2E-32BC3F2E238A}</Project>
       <Name>UniRx.Async</Name>
+    </ProjectReference>
+    <ProjectReference Include="UniRx.Async.Editor.csproj">
+      <Project>{6420C86F-8F56-1191-185D-DCB7F78EE252}</Project>
+      <Name>UniRx.Async.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
