@@ -3,7 +3,7 @@ Mobile AR Game
 
 -Unity Version: 2018.1.7.f1
 
-# Plugins
+## Plugins
 
 -GoogleARCore, Version: 1.4.1 : https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.4.1
 
@@ -19,9 +19,9 @@ Mobile AR Game
 
 -CN Controls (Joystick)
 
-# 3D Characters & Animations
+## 3D Characters & Animations
 
 - I use Mixamo.com for 3d characters and animations.
 
-# ScreenShots
+## ScreenShots
 
