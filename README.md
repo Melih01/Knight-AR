@@ -1,7 +1,7 @@
 # KnightAR
 ## Mobile AR Game
 
-- Unity Version: 2018.1.7.f1
+- Unity3D Game Engine, Version: 2018.1.7.f1
 
 ## Plugins
 
