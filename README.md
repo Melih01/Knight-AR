@@ -3,7 +3,7 @@
 
 - Unity3D Game Engine, Version: 2018.1.7.f1
 
-| [:school_satchel: Plugins](#plugins) | [:camera: Screenshots](#screenshots)
+| [:camera: Screenshots](#screenshots) | [:school_satchel: Plugins](#plugins)
 ----------- |----------- |
 
 
