@@ -2,14 +2,14 @@
 
 - Knight AR, Mobile Augmented Reality Game.
 
-| [:camera: Screenshots](#screenshots) | [:school_satchel: Plugins](#plugins)
------------ |----------- |
+| [:camera: Screenshots](#screenshots) |  [:inbox_tray: Downloads](#downloads)  | [:school_satchel: Plugins](#plugins)
+----------- |----------- |----------- |
 
 ## Getting Started
 Follow the instructions to get started with Knight AR source code:
 
-1. [Download Unity3D, Version : 2018.1.7f1](#download)
-2. [Download Source Code](#download)
+1. [Download Unity3D, Version : 2018.1.7f1](#downloads)
+2. [Download Source Code](#downloads)
 3. Open Project in Unity3D
 
 ## 3D Characters & Animations
@@ -34,7 +34,7 @@ Follow the instructions to get started with Knight AR source code:
  
  ![normalgamescene](https://user-images.githubusercontent.com/10868951/44962116-45d3ec00-af24-11e8-835f-e474de4f1881.png)
 
-## Download
+## Downloads
 
 - [:video_game: Download Unity3D, Version : 2018.1.7f1](https://download.unity3d.com/download_unity/4cb482063d12/UnityDownloadAssistant-2018.1.7f1.exe)
 
