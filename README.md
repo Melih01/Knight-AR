@@ -1,11 +1,11 @@
 # KnightAR
-## Mobile AR Game
+
+- Knight AR, Mobile Augmented Reality Game.
 
 - Unity3D Game Engine, Version: 2018.1.7.f1
 
 | [:camera: Screenshots](#screenshots) | [:school_satchel: Plugins](#plugins)
 ----------- |----------- |
-
 
 ## 3D Characters & Animations
 
