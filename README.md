@@ -15,6 +15,10 @@
 
 ![enemymixamo](https://user-images.githubusercontent.com/10868951/44962220-8ed87000-af25-11e8-88c5-0e40b022e3b5.png)
 
+- If you want to create your 3d humanoid character, you can use Adobe Fuse. It is free. :
+
+
+
 ## ScreenShots
 
  - Normal Game Scene :
