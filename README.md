@@ -19,7 +19,7 @@
 
 ![adobefusecharactercreate](https://user-images.githubusercontent.com/10868951/44962298-ba0f8f00-af26-11e8-802e-c25f2d7531c5.png)
 
-## ScreenShots
+## Screenshots
 
  - Normal Game Scene :
  
