@@ -38,7 +38,7 @@ Follow the instructions to get started with Knight AR source code:
 
 - [:video_game: Download Unity3D, Version : 2018.1.7f1](https://download.unity3d.com/download_unity/4cb482063d12/UnityDownloadAssistant-2018.1.7f1.exe)
 
-- [:video_game: Download Source Code](https://codeload.github.com/Melih01/Knight-AR/zip/master)
+- [:coffee: Download Source Code](https://codeload.github.com/Melih01/Knight-AR/zip/master)
 
 ```bash
 git clone https://github.com/Melih01/Knight-AR.git
