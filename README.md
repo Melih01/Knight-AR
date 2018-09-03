@@ -23,6 +23,14 @@
 
 - I use Mixamo.com for 3d characters and animations.
 
+- Player Character On Mixamo : 
+
+![playermixamo](https://user-images.githubusercontent.com/10868951/44962221-8ed87000-af25-11e8-8203-7cf1439d4c15.png)
+
+- Enemy Character On Mixamo : 
+
+![enemymixamo](https://user-images.githubusercontent.com/10868951/44962220-8ed87000-af25-11e8-88c5-0e40b022e3b5.png)
+
 ## ScreenShots
 
  - Normal Game Scene :
