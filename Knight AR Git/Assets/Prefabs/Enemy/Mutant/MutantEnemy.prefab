@@ -184,7 +184,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4588353040253140}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: DamagePopupSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 3306451490063965843, guid: 0000000000000000d000000000000000, type: 0}
@@ -442,7 +442,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4994002793823792}
   - component: {fileID: 137058012514351076}
-  m_Layer: 10
+  m_Layer: 13
   m_Name: MutantMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -463,7 +463,7 @@ GameObject:
   - component: {fileID: 114249399545278082}
   - component: {fileID: 114595646253763826}
   - component: {fileID: 114538094640845712}
-  m_Layer: 10
+  m_Layer: 13
   m_Name: MutantEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -705,7 +705,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4021736652858960}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: BloodEffectSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
@@ -720,7 +720,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4203238075065552}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: MutantEnemyBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
