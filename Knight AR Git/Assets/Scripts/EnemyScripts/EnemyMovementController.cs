@@ -18,7 +18,7 @@ public abstract class EnemyMovementController : CustomMonoBehaviour
         //Check Until PlayerController is not Null
         StartCoroutine(WaitUntilConditionHappenCoroutine(ConditionFunc: () =>
         {
-            bool condition = GameManager.instance.playerController != null;
+            bool condition = GameManager.instance?.playerController;
             return condition;
         },
         action: () =>
@@ -32,7 +32,7 @@ public abstract class EnemyMovementController : CustomMonoBehaviour
         if (Target != null && Target.AttributesController.health > 0)
             MoveToTarget();
         else
-            EnemyController.AnimationController.SetSpeed(0);
+            EnemyController.AnimationController.SetAnimationParameter(AnimationParameter.Speed, 0);
     }
 
     protected virtual void MoveToTarget()
@@ -63,17 +63,17 @@ public abstract class EnemyMovementController : CustomMonoBehaviour
     {
         Agent.velocity = Vector3.zero;
         Agent.isStopped = true;
-        EnemyController.AnimationController.SetSpeed(0);
-        EnemyController.AnimationController.SetAttack();
+        EnemyController.AnimationController.SetAnimationParameter(AnimationParameter.Speed, 0);
+        EnemyController.AnimationController.SetAnimationParameter(AnimationParameter.Attack);
     }
 
     protected virtual void Move()
     {
         Agent.isStopped = false;
-        EnemyController.AnimationController.SetSpeed(Agent.velocity.magnitude);
+        EnemyController.AnimationController.SetAnimationParameter(AnimationParameter.Speed, EnemyController.AttributesController.attributesInfoAsset.moveSpeed);
 
         var speedWithAnim = (EnemyController.AnimationController.Anim.deltaPosition / Time.deltaTime).magnitude - 1;
         if (speedWithAnim > 0)
-            Agent.speed = speedWithAnim;
+            Agent.speed = speedWithAnim * EnemyController.AttributesController.extraARFactor;
     }
 }

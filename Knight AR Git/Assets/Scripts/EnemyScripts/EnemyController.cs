@@ -33,13 +33,56 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
         GameManager.instance.enemyController = this;
     }
 
+    protected virtual void OnEnable()
+    {
+        //Check Until GameManager instance is not Null
+        StartCoroutine(WaitUntilConditionHappenCoroutine(ConditionFunc: () =>
+        {
+            bool condition = GameManager.instance?.gamePlayMode == GamePlayMode.AR;
+            return condition;
+        },
+        action: () =>
+        {
+            transform.localScale = Vector3.one * GameManager.instance.characterLocalScaleForAR;
+            AttributesController.ResetAllAttributes();
+        }));       
+    }
+
     protected virtual void Update()
     {
     }
 
+    #region IDamageable
+
+    public virtual void ApplyDamage(float damage, DamageElement damageElement = DamageElement.Physical)
+    {
+        if (damage > 0)
+            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.DamagePopup, damagePopupSpawnTransform, transform.localScale, damage);
+
+        if (AttributesController.health > 0)
+        {
+            AttributesController.health -= damage;
+            EnemyGetDamaged?.Invoke(this);
+
+            ///Blood Effect Spawn.
+            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.BloodSprayEffect, bloodEffectSpawnTransform, transform.localScale);
+        }
+
+        if (AttributesController.health <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            AnimationController.SetAnimationParameter(AnimationParameter.Hit);
+        }
+    }
+
+    #endregion
+
     protected virtual void Die()
     {
-        AnimationController.SetDie();
+        AnimationController.SetAnimationParameter(AnimationParameter.Die);
         EnemyDied?.Invoke(this);
         contactCollider.enabled = false;
 
@@ -50,38 +93,10 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
     {
         if (AttributesController.health <= 0)
         {
-            AnimationController.SetRevive();
+            AnimationController.SetAnimationParameter(AnimationParameter.Revive);
             contactCollider.enabled = true;
         }
 
         AttributesController.ResetAllAttributes();
     }
-
-    #region IDamageable
-
-    public virtual void ApplyDamage(float damage, DamageElement damageElement = DamageElement.Physical)
-    {
-        if (damage > 0)
-            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.DamagePopup, damagePopupSpawnTransform, damage); 
-
-        if (AttributesController.health > 0)
-        {
-            AttributesController.health -= damage;
-            EnemyGetDamaged?.Invoke(this);
-
-            ///Blood Effect Spawn.
-            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.BloodSprayEffect, bloodEffectSpawnTransform);
-        }
-
-        if (AttributesController.health <= 0)
-        {
-            Die();
-        }
-        else
-        {
-            AnimationController.SetHit();
-        }
-    }
-
-    #endregion
 }

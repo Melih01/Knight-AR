@@ -51,34 +51,41 @@ public class ObjectPoolManager : CustomMonoBehaviour
         return Instantiate(prefab, parent);
     }
 
-    public void Spawn(ObjectPoolType objectPoolType, Transform parent, Vector3 localPosition, float damage = 0)
+    public void Spawn(ObjectPoolType objectPoolType, Transform parent, Vector3 localPosition, Vector3 localScale, float damage = 0)
     {
-        SpawnBase(objectPoolType, parent, localPosition, damage);
+        SpawnBase(objectPoolType, parent, localPosition, localScale, damage);
     }
 
-    public void Spawn(ObjectPoolType objectPoolType, Transform parent, float damage = 0)
+    public void Spawn(ObjectPoolType objectPoolType, Transform parent, Vector3 localScale, float damage = 0)
     {
-        SpawnBase(objectPoolType, parent, Vector3.zero, damage);
+        SpawnBase(objectPoolType, parent, Vector3.zero, localScale, damage);
     }
 
-    public void Spawn(ObjectPoolType objectPoolType, Vector3 position, float damage = 0)
+    public void Spawn(ObjectPoolType objectPoolType, Vector3 position, Vector3 localScale, float damage = 0)
     {
-        SpawnBase(objectPoolType, null, position, damage);
+        SpawnBase(objectPoolType, null, position, localScale, damage);
     }
 
-    private void SpawnBase(ObjectPoolType objectPoolType, Transform parent, Vector3 position, float damage = 0)
+    private void SpawnBase(ObjectPoolType objectPoolType, Transform parent, Vector3 position, Vector3 localScale, float damage = 0)
     {
+        GameObject poolObject;
+
         switch (objectPoolType)
         {
             case ObjectPoolType.DamagePopup:
-                var obj = damagePopupObjectPoolList.ObjectPoolSpawn(parent, active: false);
-                var damagePopupController = obj.GetComponent<DamagePopupController>();
+                poolObject = damagePopupObjectPoolList.ObjectPoolSpawn(parent, active: false);
+
+                var damagePopupController = poolObject.GetComponent<DamagePopupController>();
                 damagePopupController.damage = damage;
-                obj.transform.localPosition = Vector3.zero;
-                obj.SetActive(true);
+                poolObject.transform.localPosition = Vector3.zero;
+                if (GameManager.instance.gamePlayMode == GamePlayMode.AR) poolObject.transform.localScale = localScale;
+                poolObject.SetActive(true);
                 break;
             case ObjectPoolType.BloodSprayEffect:
-                bloodSprayEffectObjectPoolList.ObjectPoolSpawn(parent).GetComponent<ParticleSystem>().Play();
+                poolObject = bloodSprayEffectObjectPoolList.ObjectPoolSpawn(parent, active: false);
+                poolObject.GetComponentsInChildren<Transform>().DoForAll(transforms => transforms.localScale = localScale);
+                poolObject.GetComponent<ParticleSystem>().Play();
+                poolObject.SetActive(true);
                 break;
         }
     }
@@ -128,7 +135,7 @@ public static class ObjectPoolManagerExtensions
         return obj;
     }
 
-    public static GameObject ObjectPoolSpawn(this IList<GameObject> list, Transform parent,Vector3 localPosition, bool active = true)
+    public static GameObject ObjectPoolSpawn(this IList<GameObject> list, Transform parent, Vector3 localPosition, bool active = true)
     {
         var obj = list[0];
         list.RemoveAt(0);

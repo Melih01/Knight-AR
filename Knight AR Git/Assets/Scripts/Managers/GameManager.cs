@@ -13,24 +13,16 @@ public class GameManager : CustomMonoBehaviour
     public ScreenUIController screenUIController;
     [Space]
     public ObjectPoolManager objectPoolManager;
+    [Space]
+    public float characterLocalScaleForAR = 0.5f;
+
+    public static GameManager instance;
+    public static GameManager Instance { get { return instance; } }
 
     public PlayerController playerController { get; set; }
     public EnemyController enemyController { get; set; }
 
     public GamePlayMode gamePlayMode { get; private set; }
-
-    public static GameManager instance;
-
-    public static GameManager Instance
-    {
-        get
-        {
-            return instance;
-        }
-    }
-
-    [Space]
-    public float characterLocalScaleForAR = 0.1f;
 
     void OnEnable()
     {

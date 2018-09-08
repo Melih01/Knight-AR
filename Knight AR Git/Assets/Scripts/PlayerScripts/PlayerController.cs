@@ -32,6 +32,21 @@ public class PlayerController : CustomMonoBehaviour, IDamageable
         GameManager.instance.playerController = this;
     }
 
+    void OnEnable()
+    {
+        //Check Until GameManager instance is not Null
+        StartCoroutine(WaitUntilConditionHappenCoroutine(ConditionFunc: () =>
+        {
+            bool condition = GameManager.instance?.gamePlayMode == GamePlayMode.AR;
+            return condition;
+        },
+        action: () =>
+        {
+            transform.localScale = Vector3.one * GameManager.instance.characterLocalScaleForAR;
+            AttributesController.ResetAllAttributes();
+        }));
+    }
+
     public virtual void Die()
     {
         GameManager.instance.screenUIController.gameResultUIController.ShowGameResultUI(false);
@@ -61,7 +76,7 @@ public class PlayerController : CustomMonoBehaviour, IDamageable
     {
         var TotalDamage = damage - AttributesController.armor;
 
-        GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.DamagePopup, damagePopupSpawnTransform, TotalDamage);
+        GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.DamagePopup, damagePopupSpawnTransform, transform.localScale, TotalDamage);
 
         if (AttributesController.health > 0)
         {
@@ -69,7 +84,7 @@ public class PlayerController : CustomMonoBehaviour, IDamageable
             PlayerGetDamaged?.Invoke(this); /// Used For PlayerUI.
 
             ///Blood Effect Spawn.
-            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.BloodSprayEffect, bloodEffectSpawnTransform);
+            GameManager.instance.objectPoolManager.Spawn(ObjectPoolType.BloodSprayEffect, bloodEffectSpawnTransform, transform.localScale);
         }
 
         if (AttributesController.health <= 0)

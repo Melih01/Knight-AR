@@ -7,8 +7,8 @@ public class PlayerAttributesController : CustomMonoBehaviour
     [Space]
     public PlayerAttributesInfoAsset attributesInfoAsset;
 
-    public float speed;/* { get; set; }*/
-    public float health;/* { get; set; }*/
+    public float speed { get; set; }
+    public float health { get; set; }
     public float regularDamage { get; set; }
     public float criticalChance { get; set; }
     public float armorPiece { get; set; }
@@ -25,7 +25,7 @@ public class PlayerAttributesController : CustomMonoBehaviour
         }
     }
 
-   void Awake()
+    void Awake()
     {
         health = attributesInfoAsset.health;
         regularDamage = attributesInfoAsset.regularDamage;

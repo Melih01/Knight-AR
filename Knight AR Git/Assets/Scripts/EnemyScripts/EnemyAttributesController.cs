@@ -25,7 +25,7 @@ public class EnemyAttributesController : CustomMonoBehaviour
         }
     }
 
-    protected float extraARFactor = .3f;
+    public float extraARFactor { get; private set; } = 0.3f;
 
     protected virtual void Awake()
     {
@@ -47,6 +47,8 @@ public class EnemyAttributesController : CustomMonoBehaviour
 
         EnemyController.MovementController.Agent.speed = speed;
         EnemyController.MovementController.Agent.stoppingDistance = stoppingDistance;
+
+        extraARFactor = GameManager.instance.gamePlayMode == GamePlayMode.AR ? 0.3f : 1;
     }
 
     public virtual void ResetAllAttributes()

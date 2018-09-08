@@ -13,6 +13,12 @@ public class BloodEffectController : CustomMonoBehaviour
 
     void OnEnable()
     {
+        //GetComponentsInChildren<Transform>().DoForAll(transforms =>
+        //{
+        //    transforms.localScale = GameManager.instance.playerController.transform.localScale;
+        //    Debug.Log("Transform : " + transforms.name);
+        //});
+
         StartCoroutine(WaitForSecondsCoroutine(particleSystem.main.duration,
             action: () =>
               {

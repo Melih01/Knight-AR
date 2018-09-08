@@ -11,10 +11,12 @@ public class PlayerMovementController : CustomMonoBehaviour
     bool isWillMove = false;
 
     PlayerController playerController;
+    Transform cameraTransform;
 
     void Awake()
     {
         playerController = GetComponent<PlayerController>();
+        cameraTransform = FindObjectOfType<Camera>().transform;
     }
 
     void Update()
@@ -34,8 +36,8 @@ public class PlayerMovementController : CustomMonoBehaviour
 
             if (isWillMove)
             {
-                var angle = inputVector.GetAngle();
-                transform.rotation = Quaternion.Euler(0, angle, 0);
+                float angle = RotateAngleWithCameraView(inputVector); //Calculate Rotation Angle
+                transform.rotation = Quaternion.Euler(0, angle, 0); //Set Rotation Angle
 
                 movementVector += Physics.gravity;
 
@@ -53,5 +55,12 @@ public class PlayerMovementController : CustomMonoBehaviour
         {
             inputMoveSpeed = Vector3.zero.magnitude;
         }
+    }
+
+    float RotateAngleWithCameraView(Vector2 inputVector)
+    {
+        var cameraViewDirection = cameraTransform.TransformDirection(inputVector.x, 0, inputVector.y);
+        var angle = new Vector2(cameraViewDirection.x, cameraViewDirection.z).GetAngle();
+        return angle;
     }
 }

@@ -42,7 +42,7 @@ namespace GoogleARCore.Examples.HelloAR
         /// <summary>
         /// A prefab for tracking and visualizing detected planes.
         /// </summary>
-        public GameObject TrackedPlanePrefab;
+        public GameObject DetectedPlaneGenerator;
 
         /// <summary>
         /// A model to place when a raycast from a user touch hits a plane.
@@ -140,7 +140,7 @@ namespace GoogleARCore.Examples.HelloAR
             if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit) && !clicked)
             {
                 clicked = true;
-
+                DetectedPlaneGenerator.SetActive(false);
                 ShowObjects(hit);
             }
         }
