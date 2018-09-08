@@ -31,8 +31,7 @@ Follow the instructions to get started with Knight AR source code:
 ## Screenshots
 
  - Normal Game Scene :
- 
- ![normalgamescene](https://user-images.githubusercontent.com/10868951/44962116-45d3ec00-af24-11e8-835f-e474de4f1881.png)
+ ![normalgamescene](https://user-images.githubusercontent.com/10868951/45256101-5f4cbc00-b39a-11e8-896d-860652c6ce98.png)
 
 ## Downloads
 
