@@ -458,11 +458,11 @@ GameObject:
   m_Component:
   - component: {fileID: 4830497650655808}
   - component: {fileID: 95016310116590600}
+  - component: {fileID: 195837862534952582}
   - component: {fileID: 114202904677808084}
   - component: {fileID: 114249399545278082}
   - component: {fileID: 114595646253763826}
   - component: {fileID: 114538094640845712}
-  - component: {fileID: 195837862534952582}
   m_Layer: 10
   m_Name: MutantEnemy
   m_TagString: Untagged

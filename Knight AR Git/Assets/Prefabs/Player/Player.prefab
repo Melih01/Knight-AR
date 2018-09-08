@@ -362,7 +362,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 18
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!1 &1295672631362338
 GameObject:
@@ -588,7 +588,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 18
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!1 &1501452270705428
 GameObject:
@@ -984,7 +984,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 18
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!1 &1814965940116294
 GameObject:
@@ -2434,8 +2434,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attributesInfoAsset: {fileID: 11400000, guid: dc1897e0cb1e7be4b90412dc9795f06c,
     type: 2}
-  speed: 0
-  health: 0
 --- !u!136 &136099611534767786
 CapsuleCollider:
   m_ObjectHideFlags: 1

@@ -17,7 +17,7 @@ public class EnemyUIController : CustomMonoBehaviour
         //Check Until EnemyController is not Null
         StartCoroutine(WaitUntilConditionHappenCoroutine(ConditionFunc: () =>
         {
-            bool condition = GameManager.instance.enemyController != null;
+            bool condition = GameManager.instance?.enemyController;
             return condition;
         },
         action: () =>
@@ -49,6 +49,7 @@ public class EnemyUIController : CustomMonoBehaviour
     {
         healthText.text = enemyController.AttributesController.attributesInfoAsset.health.ToString();
         healthSlider.maxValue = enemyController.AttributesController.attributesInfoAsset.health;
+        healthSlider.value = healthSlider.maxValue;
     }
 
     public void ResetAllAttributes()

@@ -31,7 +31,7 @@ public class PlayerUIController : CustomMonoBehaviour
         //Check Until PlayerController is not Null
         StartCoroutine(WaitUntilConditionHappenCoroutine(ConditionFunc: () =>
         {
-            bool condition = GameManager.instance.playerController != null;
+            bool condition = GameManager.instance?.playerController;
             return condition;
         },
         action: () =>
@@ -89,6 +89,7 @@ public class PlayerUIController : CustomMonoBehaviour
     {
         healthText.text = playerController.AttributesController.attributesInfoAsset.health.ToString();
         healthSlider.maxValue = playerController.AttributesController.attributesInfoAsset.health;
+        healthSlider.value = healthSlider.maxValue;
     }
 
     public void OnPlayerGetDamage(PlayerController playerController)
