@@ -17,5 +17,5 @@ MonoBehaviour:
   criticalChance: 0.3
   armorPiece: 10
   armor: 20
-  stoppingDistance: 3
+  stoppingDistance: 2
   damageElement: 0

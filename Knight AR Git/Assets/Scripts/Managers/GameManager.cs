@@ -14,7 +14,16 @@ public class GameManager : CustomMonoBehaviour
     [Space]
     public ObjectPoolManager objectPoolManager;
     [Space]
-    public float characterLocalScaleForAR = 0.5f;
+    [SerializeField]
+    float localScaleForAR = 0.5f;
+
+    public float characterLocalScaleForAR
+    {
+        get
+        {
+            return gamePlayMode == GamePlayMode.AR ? localScaleForAR : 1;
+        }
+    }
 
     public static GameManager instance;
     public static GameManager Instance { get { return instance; } }

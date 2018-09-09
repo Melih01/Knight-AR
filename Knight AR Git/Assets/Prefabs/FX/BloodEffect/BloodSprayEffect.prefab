@@ -36,16 +36,16 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4000013488956786}
+  - component: {fileID: 114226068018617534}
   - component: {fileID: 198000011254678926}
   - component: {fileID: 199000010223498802}
-  - component: {fileID: 114226068018617534}
   m_Layer: 0
   m_Name: BloodSprayEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4000010553517452
 Transform:
   m_ObjectHideFlags: 1

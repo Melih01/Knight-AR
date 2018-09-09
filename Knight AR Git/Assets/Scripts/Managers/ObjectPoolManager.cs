@@ -148,7 +148,11 @@ public static class ObjectPoolManagerExtensions
 
     public static void ObjectPoolReturn(this IList<GameObject> list, GameObject prefab)
     {
-        customMonoBehaviour = GameManager.instance.GetComponent<CustomMonoBehaviour>();
+        if (GameManager.instance)
+            customMonoBehaviour = GameManager.instance.GetComponent<CustomMonoBehaviour>();
+        else
+            return;
+
         customMonoBehaviour.StartCoroutine(customMonoBehaviour.WaitForSecondsCoroutine(0.1f, action: () =>
             {
                 prefab.transform.SetParent(GameManager.instance.objectPoolManager.objectPoolContainer);

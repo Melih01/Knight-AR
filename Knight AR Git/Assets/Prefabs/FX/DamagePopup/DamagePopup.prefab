@@ -19,11 +19,11 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 224657152434148198}
+  - component: {fileID: 222917370099474522}
   - component: {fileID: 23778441125914996}
   - component: {fileID: 33520133355475698}
-  - component: {fileID: 222917370099474522}
-  - component: {fileID: 114061706596801218}
   - component: {fileID: 114156935527427332}
+  - component: {fileID: 114061706596801218}
   m_Layer: 0
   m_Name: DamagePopup
   m_TagString: Untagged
@@ -101,8 +101,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278747392
-  m_fontColor: {r: 0, g: 0.509434, b: 0.033483323, a: 1}
+    rgba: 4278190219
+  m_fontColor: {r: 0.548, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -198,7 +198,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40478e34b29d1f843b9cb55bef3e5dba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 0
 --- !u!222 &222917370099474522
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -220,6 +219,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0, y: 0}
+  m_AnchoredPosition: {x: -0, y: 1.888}
   m_SizeDelta: {x: 5, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}

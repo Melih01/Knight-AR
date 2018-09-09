@@ -692,6 +692,10 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1282700166731816, guid: 27134cb38cced21429e5deb2115cdb65, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 27134cb38cced21429e5deb2115cdb65, type: 2}
   m_IsPrefabParent: 0
@@ -1690,6 +1694,35 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4069021057079608, guid: 1e6940b15d07e084aacb12705f1a997a, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4069021057079608, guid: 1e6940b15d07e084aacb12705f1a997a, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4069021057079608, guid: 1e6940b15d07e084aacb12705f1a997a, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4069021057079608, guid: 1e6940b15d07e084aacb12705f1a997a, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4069021057079608, guid: 1e6940b15d07e084aacb12705f1a997a, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 95971621644237040, guid: 1e6940b15d07e084aacb12705f1a997a,
+        type: 2}
+      propertyPath: m_CullingMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1414114953987802, guid: 1e6940b15d07e084aacb12705f1a997a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1e6940b15d07e084aacb12705f1a997a, type: 2}
   m_IsPrefabParent: 0
@@ -1738,7 +1771,7 @@ Light:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 9728
-  m_Lightmapping: 1
+  m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
@@ -2262,7 +2295,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4183198471044594, guid: e51d00f2dd932454b8e70a066d5711ee, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0.003
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4183198471044594, guid: e51d00f2dd932454b8e70a066d5711ee, type: 2}
       propertyPath: m_LocalPosition.z
@@ -2327,7 +2360,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1867342051640828, guid: e51d00f2dd932454b8e70a066d5711ee, type: 2}
       propertyPath: m_StaticEditorFlags
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 64973966844114628, guid: e51d00f2dd932454b8e70a066d5711ee, type: 2}

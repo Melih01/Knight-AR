@@ -16,16 +16,20 @@ public class DamagePopupController : CustomMonoBehaviour
 
         text.text = damage.ToString();
 
+        float firstLocalPosionY = transform.localPosition.y;
+
         StartCoroutine(LerpConditionCoroutine(
         ConditionFunc: () =>
         {
-            return transform.localPosition.y > 1;
+            return transform.localPosition.y > (firstLocalPosionY + 1);
         },
         lerpAction: () =>
         {
             MoveUp();
 
-            if (transform.localPosition.y > .2f)
+            transform.LookAt(transform.position - Camera.main.transform.position);
+
+            if (transform.localPosition.y > firstLocalPosionY + (0.2f * GameManager.instance?.characterLocalScaleForAR))
                 ChangeTextAlpha();
         },
         finishAction: () =>
