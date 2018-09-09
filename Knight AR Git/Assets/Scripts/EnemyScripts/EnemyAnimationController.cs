@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum AnimationParameter
+public enum EnemyAnimatorParameter
 {
     Speed,
     Hit,
@@ -24,42 +24,41 @@ public class EnemyAnimationController : CustomMonoBehaviour
     public static int DieParameter = Animator.StringToHash("Die");
     #endregion
 
-    protected Dictionary<AnimationParameter, int> animParameterDic = new Dictionary<AnimationParameter, int>();
-    protected Animation animation;
+    protected Dictionary<EnemyAnimatorParameter, int> animParameterDic = new Dictionary<EnemyAnimatorParameter, int>();
 
     protected virtual void Awake()
     {
         Anim = GetComponent<Animator>();
 
-        animParameterDic.Add(AnimationParameter.Speed, SpeedParameter);
-        animParameterDic.Add(AnimationParameter.Hit, HitParameter);
-        animParameterDic.Add(AnimationParameter.Attack, AttackParameter);
-        animParameterDic.Add(AnimationParameter.Revive, ReviveParameter);
-        animParameterDic.Add(AnimationParameter.Die, DieParameter);
+        animParameterDic.Add(EnemyAnimatorParameter.Speed, SpeedParameter);
+        animParameterDic.Add(EnemyAnimatorParameter.Hit, HitParameter);
+        animParameterDic.Add(EnemyAnimatorParameter.Attack, AttackParameter);
+        animParameterDic.Add(EnemyAnimatorParameter.Revive, ReviveParameter);
+        animParameterDic.Add(EnemyAnimatorParameter.Die, DieParameter);
     }
 
     #region SetAnimationParameterMethods
-    public virtual void SetAnimationParameter<T>(AnimationParameter animParameter, T value) // Created for Future
+    public virtual void SetAnimationParameter<T>(EnemyAnimatorParameter animParameter, T value) // Created for Future
     {
         switch (animParameter)
         {
-            case AnimationParameter.Speed:
+            case EnemyAnimatorParameter.Speed:
                 float speed = float.Parse(value.ToString());
                 SetSpeedForParameter(animParameter,speed);
                 break;
         }
     }
 
-    public virtual void SetAnimationParameter(AnimationParameter animParameter)
+    public virtual void SetAnimationParameter(EnemyAnimatorParameter animParameter)
     {
         switch (animParameter)
         {   
-            case AnimationParameter.Attack:
+            case EnemyAnimatorParameter.Attack:
                 AttackStateStarted();
                 break;
-            case AnimationParameter.Hit:
-            case AnimationParameter.Revive:
-            case AnimationParameter.Die:
+            case EnemyAnimatorParameter.Hit:
+            case EnemyAnimatorParameter.Revive:
+            case EnemyAnimatorParameter.Die:
                 AttackStateFinished();
                 break;
         }
@@ -68,7 +67,7 @@ public class EnemyAnimationController : CustomMonoBehaviour
     }
     #endregion
 
-    protected virtual void SetSpeedForParameter(AnimationParameter animParameter,float speed)
+    protected virtual void SetSpeedForParameter(EnemyAnimatorParameter animParameter,float speed)
     {
         Anim.SetFloat(animParameterDic[animParameter], speed);
     }

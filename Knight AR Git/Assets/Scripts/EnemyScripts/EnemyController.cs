@@ -74,7 +74,7 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
         }
         else
         {
-            AnimationController.SetAnimationParameter(AnimationParameter.Hit);
+            AnimationController.SetAnimationParameter(EnemyAnimatorParameter.Hit);
         }
     }
 
@@ -82,7 +82,7 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
 
     protected virtual void Die()
     {
-        AnimationController.SetAnimationParameter(AnimationParameter.Die);
+        AnimationController.SetAnimationParameter(EnemyAnimatorParameter.Die);
         EnemyDied?.Invoke(this);
         contactCollider.enabled = false;
 
@@ -93,7 +93,7 @@ public abstract class EnemyController : CustomMonoBehaviour, IDamageable
     {
         if (AttributesController.health <= 0)
         {
-            AnimationController.SetAnimationParameter(AnimationParameter.Revive);
+            AnimationController.SetAnimationParameter(EnemyAnimatorParameter.Revive);
             contactCollider.enabled = true;
         }
 

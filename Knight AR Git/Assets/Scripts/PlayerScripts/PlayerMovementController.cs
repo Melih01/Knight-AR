@@ -22,7 +22,7 @@ public class PlayerMovementController : CustomMonoBehaviour
     void Update()
     {
         Move();
-        playerController.AnimationController.SetSpeed(inputMoveSpeed);
+        playerController.AnimationController.SetAnimationParameter(PlayerAnimatorParameter.Speed, inputMoveSpeed);
     }
 
     void Move()

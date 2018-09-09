@@ -32,7 +32,7 @@ public abstract class EnemyMovementController : CustomMonoBehaviour
         if (Target != null && Target.AttributesController.health > 0)
             MoveToTarget();
         else
-            EnemyController.AnimationController.SetAnimationParameter(AnimationParameter.Speed, 0);
+            EnemyController.AnimationController.SetAnimationParameter(EnemyAnimatorParameter.Speed, 0);
     }
 
     protected virtual void MoveToTarget()
@@ -63,14 +63,14 @@ public abstract class EnemyMovementController : CustomMonoBehaviour
     {
         Agent.velocity = Vector3.zero;
         Agent.isStopped = true;
-        EnemyController.AnimationController.SetAnimationParameter(AnimationParameter.Speed, 0);
-        EnemyController.AnimationController.SetAnimationParameter(AnimationParameter.Attack);
+        EnemyController.AnimationController.SetAnimationParameter(EnemyAnimatorParameter.Speed, 0);
+        EnemyController.AnimationController.SetAnimationParameter(EnemyAnimatorParameter.Attack);
     }
 
     protected virtual void Move()
     {
         Agent.isStopped = false;
-        EnemyController.AnimationController.SetAnimationParameter(AnimationParameter.Speed, EnemyController.AttributesController.attributesInfoAsset.moveSpeed);
+        EnemyController.AnimationController.SetAnimationParameter(EnemyAnimatorParameter.Speed, EnemyController.AttributesController.attributesInfoAsset.moveSpeed);
 
         var speedWithAnim = (EnemyController.AnimationController.Anim.deltaPosition / Time.deltaTime).magnitude - 1;
         if (speedWithAnim > 0)

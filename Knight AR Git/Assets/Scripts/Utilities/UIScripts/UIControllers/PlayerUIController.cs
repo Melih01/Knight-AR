@@ -110,25 +110,25 @@ public class PlayerUIController : CustomMonoBehaviour
 
     public void OnClickedSlashAttackButton(PlayerController playerController)
     {
-        playerController.AnimationController.SetSlashAttack();
+        playerController.AnimationController.SetAnimationParameter(PlayerAnimatorParameter.SlashAttack);
         Debug.Log("SlashAttack");
     }
 
     public void OnClickedJumpAttackButton(PlayerController playerController)
     {
-        playerController.AnimationController.SetJumpAttack();
+        playerController.AnimationController.SetAnimationParameter(PlayerAnimatorParameter.JumpAttack);
         Debug.Log("JumpAttack");
     }
 
     public void OnClickedMagicAttackButton(PlayerController playerController)
     {
-        playerController.AnimationController.SetMagicAttack();
+        playerController.AnimationController.SetAnimationParameter(PlayerAnimatorParameter.MagicAttack);
         Debug.Log("MagicAttack");
     }
 
     public void OnClickedShieldDefenceButton(PlayerController playerController)
     {
-        playerController.AnimationController.SetShieldDefence();
+        playerController.AnimationController.SetAnimationParameter(PlayerAnimatorParameter.ShieldDefence);
         Debug.Log("ShieldDefence");
     }
 }

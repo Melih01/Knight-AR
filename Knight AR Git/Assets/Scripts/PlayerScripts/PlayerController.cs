@@ -55,14 +55,14 @@ public class PlayerController : CustomMonoBehaviour, IDamageable
         PlayerDied?.Invoke(this);
         contactCollider.enabled = false;
 
-        AnimationController.SetDie();
+        AnimationController.SetAnimationParameter(PlayerAnimatorParameter.Die); //AnimationController.SetDie();
     }
 
     public virtual void Revive()
     {
         if (AttributesController.health <= 0)
         {
-            AnimationController.SetRevive();
+            AnimationController.SetAnimationParameter(PlayerAnimatorParameter.Revive); //AnimationController.SetRevive();
             contactCollider.enabled = true;
         }
 
@@ -93,7 +93,7 @@ public class PlayerController : CustomMonoBehaviour, IDamageable
         }
         else
         {
-            AnimationController.SetHit();
+            AnimationController.SetAnimationParameter(PlayerAnimatorParameter.Hit);  //AnimationController.SetHit();
         }
     }
 
