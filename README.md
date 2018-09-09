@@ -14,7 +14,7 @@ Follow the instructions to get started with Knight AR source code:
 
 ## 3D Characters & Animations
 
-- I use Mixamo.com for 3d characters and animations.
+- I use [Mixamo.com](https://www.mixamo.com) for 3d characters and animations.
 
 - Player Character On Mixamo : 
 
@@ -24,7 +24,7 @@ Follow the instructions to get started with Knight AR source code:
 
 ![enemymixamo](https://user-images.githubusercontent.com/10868951/44962220-8ed87000-af25-11e8-88c5-0e40b022e3b5.png)
 
-- If you want to create your 3d humanoid character, you can use Adobe Fuse. It is free. :
+- If you want to create your 3d humanoid character, you can use [Adobe Fuse](https://www.adobe.com/tr/products/fuse.html). It is free. :
 
 ![adobefusecharactercreate](https://user-images.githubusercontent.com/10868951/44962298-ba0f8f00-af26-11e8-802e-c25f2d7531c5.png)
 
