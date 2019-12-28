@@ -24,17 +24,29 @@ namespace GoogleARCoreInternal
     using System.Diagnostics.CodeAnalysis;
     using GoogleARCore;
 
-     [SuppressMessage("UnityRules.UnityStyleRules", "US1101:NonPublicFieldsMustHavePrefixM",
-      Justification = "This is an interface so fields are already public.")]
+    [SuppressMessage("UnityRules.UnityStyleRules", "US1101:NonPublicFieldsMustHavePrefixM",
+     Justification = "This is an interface so fields are already public.")]
     internal interface ILifecycleManager
     {
+        event Action UpdateSessionFeatures;
+
         event Action EarlyUpdate;
 
+        event Action<bool> OnSessionSetEnabled;
+
+        event Action<IntPtr, IntPtr> OnSetConfiguration;
+
+        event Action OnResetInstance;
+
         SessionStatus SessionStatus { get; }
+
+        LostTrackingReason LostTrackingReason { get; }
 
         ARCoreSession SessionComponent { get; }
 
         NativeSession NativeSession { get; }
+
+        bool IsSessionChangedThisFrame { get; }
 
         AsyncTask<ApkAvailabilityStatus> CheckApkAvailability();
 

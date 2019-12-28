@@ -33,6 +33,12 @@ public class GameManager : CustomMonoBehaviour
 
     public GamePlayMode gamePlayMode { get; private set; }
 
+    void Start()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 30;
+    }
+
     void OnEnable()
     {
         if (!instance)

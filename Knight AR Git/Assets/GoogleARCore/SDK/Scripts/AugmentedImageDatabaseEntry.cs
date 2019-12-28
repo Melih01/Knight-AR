@@ -21,6 +21,7 @@
 namespace GoogleARCore
 {
     using System;
+    using System.IO;
     using UnityEngine;
 #if UNITY_EDITOR
     using UnityEditor;
@@ -52,32 +53,53 @@ namespace GoogleARCore
         /// </summary>
         public string TextureGUID;
 
+        /// <summary>
+        /// The last modified time for this entry.
+        /// </summary>
+        public string LastModifiedTime;
+
+        /// <summary>
+        /// Constructs a new Augmented Image database entry.
+        /// </summary>
+        /// <param name="name">The image name.</param>
+        /// <param name="width">The image width in meters or 0 if the width is unknown.</param>
+        public AugmentedImageDatabaseEntry(string name, float width)
+        {
+            Name = name;
+            TextureGUID = string.Empty;
+            Width = width;
+            LastModifiedTime = string.Empty;
+            Quality = string.Empty;
+        }
+
 #if UNITY_EDITOR
         public AugmentedImageDatabaseEntry(string name, Texture2D texture, float width)
         {
             Name = name;
-            TextureGUID = "";
+            TextureGUID = string.Empty;
             Width = width;
-            Quality = "";
+            Quality = string.Empty;
+            LastModifiedTime = string.Empty;
             Texture = texture;
         }
-
 
         public AugmentedImageDatabaseEntry(string name, Texture2D texture)
         {
             Name = name;
-            TextureGUID = "";
+            TextureGUID = string.Empty;
             Width = 0;
-            Quality = "";
+            Quality = string.Empty;
+            LastModifiedTime = string.Empty;
             Texture = texture;
         }
 
         public AugmentedImageDatabaseEntry(Texture2D texture)
         {
             Name = "Unnamed";
-            TextureGUID = "";
+            TextureGUID = string.Empty;
             Width = 0;
-            Quality = "";
+            Quality = string.Empty;
+            LastModifiedTime = string.Empty;
             Texture = texture;
         }
 
@@ -85,11 +107,31 @@ namespace GoogleARCore
         {
             get
             {
-                return AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath(TextureGUID));
+                string assetPath = AssetDatabase.GUIDToAssetPath(TextureGUID);
+                CheckLastModifiedTime(assetPath);
+                return AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
             }
+
             set
             {
-                TextureGUID = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(value));
+                string assetPath = AssetDatabase.GetAssetPath(value);
+                CheckLastModifiedTime(assetPath);
+                TextureGUID = AssetDatabase.AssetPathToGUID(assetPath);
+            }
+        }
+
+        public void CheckLastModifiedTime(string assetPath)
+        {
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                return;
+            }
+
+            string lastModifiedTime = File.GetLastWriteTime(assetPath).ToString();
+            if (!lastModifiedTime.Equals(LastModifiedTime))
+            {
+                Quality = string.Empty;
+                LastModifiedTime = lastModifiedTime;
             }
         }
 #endif
