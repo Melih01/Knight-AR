@@ -8,7 +8,7 @@
 ## Getting Started
 Follow the instructions to get started with Knight AR source code:
 
-1. [Download Unity3D, Version : 2018.1.7f1](#downloads)
+1. [Download Unity3D, Version : 2019.3.0f1](#downloads)
 2. [Download Source Code](#downloads)
 3. Open Project in Unity3D
 
@@ -40,7 +40,7 @@ Follow the instructions to get started with Knight AR source code:
 
 ## Downloads
 
-- [:video_game: Download Unity3D, Version : 2018.1.7f1](https://download.unity3d.com/download_unity/4cb482063d12/UnityDownloadAssistant-2018.1.7f1.exe)
+- [:video_game: Download Unity3D, Version : 2019.3.0f1](https://unity3d.com/unity/beta/2019.3.0f1)
 
 - [:coffee: Download Source Code](https://codeload.github.com/Melih01/Knight-AR/zip/master)
 
@@ -50,13 +50,13 @@ git clone https://github.com/Melih01/Knight-AR.git
 
 ## Plugins
 
-- [GoogleARCore, Version: 1.4.1](https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.4.1)
+- [GoogleARCore, Version: 1.14.0](https://github.com/google-ar/arcore-unity-sdk/releases/tag/v1.14.0)
 
 - [Cinemachine, Version : 2.1.1](https://assetstore.unity.com/packages/essentials/cinemachine-79898)
 
 - [Nav Mesh Component](https://github.com/Unity-Technologies/NavMeshComponents)
 
-- [UniRx, Version : 6.2.1](https://assetstore.unity.com/packages/tools/integration/unirx-reactive-extensions-for-unity-17276)
+- [UniRx, Version : 7.1.0](https://assetstore.unity.com/packages/tools/integration/unirx-reactive-extensions-for-unity-17276)
 
 - [Unity Particle Pack, Version : 1.6](https://assetstore.unity.com/packages/essentials/asset-packs/unity-particle-pack-5-x-73777)
 
