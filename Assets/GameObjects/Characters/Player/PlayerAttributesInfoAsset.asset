@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 372a952f9db17ee4f8bc8dac18ef00bd, type: 3}
+  m_Name: PlayerAttributesInfoAsset
+  m_EditorClassIdentifier: 
+  health: 100
+  moveSpeed: 1
+  attackSpeed: 3
+  regularDamage: 10
+  criticalChance: 0.3
+  armorPiece: 5
+  armor: 10
+  damageElement: 0
